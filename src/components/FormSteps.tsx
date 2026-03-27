@@ -66,6 +66,7 @@ export function FormInput({ label, name, icon, ...props }: FormInputProps) {
       <input
         {...register(name)}
         {...props}
+        aria-invalid={error ? "true" : "false"}
         onChange={handleChange}
         className={`w-full px-4 py-2.5 rounded-xl border bg-white transition-all outline-none text-base text-slate-900 placeholder:text-slate-300 font-medium ${
           error ? 'border-red-300 ring-4 ring-red-50 focus:ring-red-100' : 'border-slate-200 focus:border-brand-mint focus:ring-4 focus:ring-brand-mint/10'

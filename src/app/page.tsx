@@ -28,6 +28,10 @@ export default function Home() {
     return () => subscription.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [view, tramiteType]);
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     handleGoHome();
@@ -66,7 +70,7 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F8FAFC] flex flex-col">
+    <main className="relative min-h-screen bg-[#F8FAFC] flex flex-col overflow-x-hidden">
       {/* Header / Navbar */}
       <nav className="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
@@ -109,7 +113,7 @@ export default function Home() {
       </nav>
 
       {/* Main Content Area */}
-      <div className="relative pt-16 pb-12 overflow-hidden flex-1">
+      <div className="relative pt-20 md:pt-24 pb-20 md:pb-32 flex-1">
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <AnimatePresence mode="wait">
             {view === 'history' ? (
@@ -131,10 +135,10 @@ export default function Home() {
             ) : view === 'edit' ? (
               <motion.div 
                 key="edit-view"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
               >
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
                   <div className="flex items-center gap-6">
@@ -182,74 +186,74 @@ export default function Home() {
                   >
                     <div className="absolute top-0 right-0 w-32 h-32 bg-brand-mint/10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700 opacity-50" />
 
-                  <div className="relative z-10">
-                    <div className="w-16 h-16 bg-brand-mint rounded-2xl flex items-center justify-center text-white mb-8 shadow-lg shadow-brand-mint/20 group-hover:scale-110 transition-transform duration-500">
-                      <Car size={32} />
+                    <div className="relative z-10">
+                      <div className="w-16 h-16 bg-brand-mint rounded-2xl flex items-center justify-center text-white mb-8 shadow-lg shadow-brand-mint/20 group-hover:scale-110 transition-transform duration-500">
+                        <Car size={32} />
+                      </div>
+                      <h3 className="text-2xl font-bold text-gray-900 mb-3">Automóviles</h3>
+                      <p className="text-gray-500 font-medium leading-relaxed mb-6">
+                        Trámites para autos, camionetas y vehículos de carga.
+                      </p>
+                      <div className="flex items-center gap-2 text-brand-mint font-bold uppercase text-xs tracking-widest">
+                        Comenzar trámite <ChevronRight size={16} />
+                      </div>
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-3">Automóviles</h3>
-                    <p className="text-gray-500 font-medium leading-relaxed mb-6">
-                      Trámites para autos, camionetas y vehículos de carga.
-                    </p>
-                    <div className="flex items-center gap-2 text-brand-mint font-bold uppercase text-xs tracking-widest">
-                      Comenzar trámite <ChevronRight size={16} />
-                    </div>
-                  </div>
-                </button>
-
-                <button
-                  onClick={() => setTramiteType('moto')}
-                  className="group relative bg-white p-10 rounded-3xl border border-gray-100 shadow-xl shadow-gray-200/50 hover:shadow-brand-black/30 hover:border-brand-black/30 transition-all duration-500 text-left overflow-hidden"
-                >
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-brand-black/10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700 opacity-50" />
-
-                  <div className="relative z-10">
-                    <div className="w-16 h-16 bg-brand-black rounded-2xl flex items-center justify-center text-white mb-8 shadow-lg shadow-brand-black/20 group-hover:scale-110 transition-transform duration-500">
-                      <Bike size={32} />
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-3">Motocicletas</h3>
-                    <p className="text-gray-500 font-medium leading-relaxed mb-6">
-                      Trámites específicos para motovehículos y cuatriciclos.
-                    </p>
-                    <div className="flex items-center gap-2 text-brand-black font-bold uppercase text-xs tracking-widest">
-                      Comenzar trámite <ChevronRight size={16} />
-                    </div>
-                  </div>
-                </button>
-              </div>
-            </motion.div>
-          ) : (
-            <motion.div 
-              key="wizard-view"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-            >
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-                <div className="flex items-center gap-6">
-                  <button
-                    onClick={() => setTramiteType(null)}
-                    className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-gray-400 hover:text-brand-mint hover:shadow-lg transition-all border border-gray-100"
-                  >
-                    <ArrowLeft size={20} />
                   </button>
-                  <div>
-                    <h1 className="text-3xl font-black text-gray-900 tracking-tight">
-                      Formulario 08 - <span className="text-brand-mint">{tramiteType === 'auto' ? 'Automóvil' : 'Motocicleta'}</span>
-                    </h1>
-                    <p className="text-gray-500 font-medium">Complete los pasos para generar el documento oficial</p>
+
+                  <button
+                    onClick={() => setTramiteType('moto')}
+                    className="group relative bg-white p-10 rounded-3xl border border-gray-100 shadow-xl shadow-gray-200/50 hover:shadow-brand-black/30 hover:border-brand-black/30 transition-all duration-500 text-left overflow-hidden"
+                  >
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-brand-black/10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700 opacity-50" />
+
+                    <div className="relative z-10">
+                      <div className="w-16 h-16 bg-brand-black rounded-2xl flex items-center justify-center text-white mb-8 shadow-lg shadow-brand-black/20 group-hover:scale-110 transition-transform duration-500">
+                        <Bike size={32} />
+                      </div>
+                      <h3 className="text-2xl font-bold text-gray-900 mb-3">Motocicletas</h3>
+                      <p className="text-gray-500 font-medium leading-relaxed mb-6">
+                        Trámites específicos para motovehículos y cuatriciclos.
+                      </p>
+                      <div className="flex items-center gap-2 text-brand-black font-bold uppercase text-xs tracking-widest">
+                        Comenzar trámite <ChevronRight size={16} />
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div 
+                key="wizard-view"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+                  <div className="flex items-center gap-6">
+                    <button
+                      onClick={() => setTramiteType(null)}
+                      className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-gray-400 hover:text-brand-mint hover:shadow-lg transition-all border border-gray-100"
+                    >
+                      <ArrowLeft size={20} />
+                    </button>
+                    <div>
+                      <h1 className="text-3xl font-black text-gray-900 tracking-tight">
+                        Formulario 08 - <span className="text-brand-mint">{tramiteType === 'auto' ? 'Automóvil' : 'Motocicleta'}</span>
+                      </h1>
+                      <p className="text-gray-500 font-medium">Complete los pasos para generar el documento oficial</p>
+                    </div>
+                  </div>
+                  <div className={`px-6 py-2 rounded-full text-xs font-black uppercase tracking-[0.2em] border self-start md:self-center ${
+                    tramiteType === 'auto' ? 'bg-brand-mint/10 text-brand-mint border-brand-mint/20' : 'bg-brand-black/10 text-brand-black border-brand-black/20'
+                  }`}>
+                    Trámite {tramiteType}
                   </div>
                 </div>
-                <div className={`px-6 py-2 rounded-full text-xs font-black uppercase tracking-[0.2em] border self-start md:self-center ${
-                  tramiteType === 'auto' ? 'bg-brand-mint/10 text-brand-mint border-brand-mint/20' : 'bg-brand-black/10 text-brand-black border-brand-black/20'
-                }`}>
-                  Trámite {tramiteType}
-                </div>
-              </div>
 
-              <Wizard type={tramiteType} />
-            </motion.div>
-          )}
+                <Wizard type={tramiteType!} />
+              </motion.div>
+            )}
         </AnimatePresence>
         </div>
       </div>
@@ -259,7 +263,7 @@ export default function Home() {
       <div className="absolute top-1/2 -right-64 w-96 h-96 bg-brand-black/10 rounded-full blur-3xl opacity-30 -z-10" />
 
       {/* Footer */}
-      <footer className="py-12 text-center text-gray-400 text-sm font-bold uppercase tracking-widest mt-auto">
+      <footer className="py-12 text-center text-gray-400 text-sm font-bold uppercase tracking-widest mt-auto bg-[#F8FAFC]">
         <p>© 2026 LP Escribanía Argentina</p>
       </footer>
     </main>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronLeft, Save, FileText, CheckCircle, User, Users, Car, CreditCard } from 'lucide-react';
 import { useForm, FormProvider } from 'react-hook-form';
@@ -77,15 +77,31 @@ export default function Wizard({ type, initialData, onSuccess }: WizardProps) {
     }
   });
 
-  const next = async () => {
-    const fields = getFieldsForStep(currentStep);
-    const isValid = await methods.trigger(fields as any);
-    if (isValid) {
-      setCurrentStep((s) => Math.min(s + 1, steps.length - 1));
-    }
-  };
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentStep]);
 
-  const prev = () => setCurrentStep((s) => Math.max(s - 1, 0));
+  const next = async () => {
+      const fields = getFieldsForStep(currentStep);
+      const isValid = await methods.trigger(fields as any);
+      
+      if (isValid) {
+        setCurrentStep((s) => Math.min(s + 1, steps.length - 1));
+      } else {
+        // Encontrar el primer campo con error y hacer scroll hacia él
+        setTimeout(() => {
+          const firstErrorField = document.querySelector('[aria-invalid="true"], .text-red-500');
+          if (firstErrorField) {
+            firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 100);
+      }
+    };
+
+  const prev = () => {
+    setCurrentStep((s) => Math.max(s - 1, 0));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const getFieldsForStep = (step: number) => {
     switch (step) {
@@ -273,43 +289,45 @@ export default function Wizard({ type, initialData, onSuccess }: WizardProps) {
       </FormProvider>
 
       {/* Mobile Navigation - Fixed Bottom */}
-      <div className="md:hidden fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-xl border-t border-gray-100 p-4 flex items-center justify-between gap-4 z-[100] shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
-        <button
-          type="button"
-          onClick={prev}
-          disabled={currentStep === 0}
-          className="w-12 h-12 rounded-xl flex items-center justify-center transition-all disabled:opacity-20 bg-gray-50 text-gray-400 border border-gray-100"
-        >
-          <ChevronLeft className="w-6 h-6" />
-        </button>
-        
-        <button
-          type="button"
-          onClick={onSaveDraft}
-          disabled={isSaving}
-          className="flex-1 h-12 rounded-xl font-bold uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 transition-all bg-white border border-gray-200 text-gray-500 active:scale-95"
-        >
-          {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Borrador
-        </button>
+      <div className="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-4 pb-6 z-[9999] shadow-[0_-10px_40px_rgba(0,0,0,0.12)]">
+        <div className="grid grid-cols-[48px_1fr_1.2fr] gap-3 w-full max-w-lg mx-auto">
+          <button
+            type="button"
+            onClick={prev}
+            disabled={currentStep === 0}
+            className="w-12 h-12 rounded-xl flex items-center justify-center transition-all disabled:opacity-10 bg-slate-100 text-slate-600 border border-slate-200 active:scale-90"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          
+          <button
+            type="button"
+            onClick={onSaveDraft}
+            disabled={isSaving}
+            className="h-12 rounded-xl font-bold uppercase tracking-widest text-[9px] flex items-center justify-center gap-1.5 transition-all bg-white border-2 border-brand-mint/30 text-slate-600 active:scale-95 shadow-sm px-1"
+          >
+            {isSaving ? <Loader2 className="w-4 h-4 animate-spin text-brand-mint" /> : <Save className="w-4 h-4 text-brand-mint" />} Borrador
+          </button>
 
-        {currentStep === steps.length - 1 ? (
-          <button
-            type="button"
-            onClick={onGeneratePDF}
-            disabled={isGenerating}
-            className="flex-[1.5] h-12 rounded-xl font-black uppercase tracking-wider text-[10px] flex items-center justify-center gap-2 transition-all bg-brand-black text-white shadow-lg active:scale-95"
-          >
-            {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />} Generar
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={next}
-            className="flex-[1.5] h-12 rounded-xl font-black uppercase tracking-wider text-[10px] flex items-center justify-center gap-2 transition-all bg-brand-mint text-white shadow-lg shadow-brand-mint/20 active:scale-95"
-          >
-            Siguiente <ChevronRight className="w-4 h-4" />
-          </button>
-        )}
+          {currentStep === steps.length - 1 ? (
+            <button
+              type="button"
+              onClick={onGeneratePDF}
+              disabled={isGenerating}
+              className="h-12 rounded-xl font-black uppercase tracking-wider text-[9px] flex items-center justify-center gap-1.5 transition-all bg-brand-black text-white shadow-xl active:scale-95 px-1"
+            >
+              {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />} Generar
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={next}
+              className="h-12 rounded-xl font-black uppercase tracking-wider text-[9px] flex items-center justify-center gap-1.5 transition-all bg-brand-mint text-white shadow-lg shadow-brand-mint/30 active:scale-95 px-1"
+            >
+              Siguiente <ChevronRight className="w-4 h-4" />
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
