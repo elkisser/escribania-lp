@@ -141,9 +141,10 @@ export function StepPerson({ type }: { type: 'vendedor' | 'comprador' | 'vendedo
   );
 }
 
-export function StepVehicle() {
-  return (
+export function StepVehicle({ type }: { type: 'auto' | 'moto' }) {
+  const isMoto = type === 'moto';
 
+  return (
     <div className="space-y-8 md:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20 md:pb-0">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
         <FormInput label="Tipo de Vehículo" name="vehiculo.tipo" placeholder="Ej: SEDAN 4 PUERTAS, MOTOCICLETA, PICK-UP" />
@@ -155,10 +156,9 @@ export function StepVehicle() {
         <FormInput label="Modelo" name="vehiculo.modelo" placeholder="Ej: Corolla" />
       </div>
 
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
         <FormInput label="Número de Motor" name="vehiculo.n_motor" placeholder="Requerido" />
-        <FormInput label="Número de Chasis" name="vehiculo.n_chasis" placeholder="Requerido" />
+        <FormInput label={isMoto ? "Número de Cuadro" : "Número de Chasis"} name="vehiculo.n_chasis" placeholder="Requerido" />
       </div>
 
       <FormInput label="Uso del Vehículo" name="vehiculo.uso" placeholder="Privado, Carga, etc." />

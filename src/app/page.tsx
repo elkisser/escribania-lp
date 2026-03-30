@@ -79,7 +79,7 @@ export default function Home() {
               <img src="/logo.svg" alt="Logo" className="w-full h-full p-1" />
             </div>
             <span className="text-2xl font-serif font-bold text-brand-black tracking-tight cursor-pointer" onClick={handleGoHome}>
-              Escribanía<span className="text-brand-mint ml-1">LP</span>
+              Escribanía<span className="text-brand-mint ml-1">RM</span>
             </span>
           </div>
 
@@ -102,6 +102,13 @@ export default function Home() {
 
           {/* Mobile Support/Logout */}
           <div className="md:hidden flex items-center gap-2">
+            <button 
+              onClick={() => setView('history')}
+              className={`p-2.5 rounded-xl transition-all ${view === 'history' ? 'bg-brand-mint/10 text-brand-mint' : 'text-gray-400 bg-gray-50'}`}
+              title="Historial"
+            >
+              <Clock size={20} />
+            </button>
             <button 
               onClick={handleLogout}
               className="p-2.5 text-gray-400 hover:text-red-500 bg-gray-50 rounded-xl transition-all"
@@ -264,7 +271,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="py-12 text-center text-gray-400 text-sm font-bold uppercase tracking-widest mt-auto bg-[#F8FAFC]">
-        <p>© 2026 LP Escribanía Argentina</p>
+        <p>© 2026 RM Escribanía Argentina</p>
       </footer>
     </main>
   );

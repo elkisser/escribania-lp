@@ -1,14 +1,14 @@
-# 🏛️ Escribanía LP - Gestión Digital de Trámites 08
+# 🏛️ Escribanía RM - Gestión Digital de Trámites 08
 
 <p align="center">
-  <img src="public/logo.svg" width="120" alt="Escribanía LP Logo" />
+  <img src="public/logo.svg" width="120" alt="Escribanía RM Logo" />
 </p>
 
 ---
 
 ## 📋 Descripción General
 
-**Escribanía LP** es una solución digital de alto nivel diseñada específicamente para el sector notarial argentino. Esta plataforma optimiza el proceso crítico de transferencia vehicular, permitiendo la carga ágil y la generación precisa de los formularios 08 oficiales para **automóviles** y **motocicletas**.
+**Escribanía RM** es una solución digital de alto nivel diseñada específicamente para el sector notarial argentino. Esta plataforma optimiza el proceso crítico de transferencia vehicular, permitiendo la carga ágil y la generación precisa de los formularios 08 oficiales para **automóviles** y **motocicletas**.
 
 Desarrollada bajo una estética profesional y sobria, la herramienta busca eliminar errores de carga manual y centralizar la gestión de trámites en un entorno seguro y accesible desde cualquier dispositivo.
 
@@ -44,6 +44,6 @@ Desarrollada bajo una estética profesional y sobria, la herramienta busca elimi
 ---
 
 <p align="center">
-  <b>© 2026 LP Escribanía Argentina</b><br/>
+  <b>© 2026 RM Escribanía Argentina</b><br/>
   <i>Tecnología aplicada a la gestión notarial.</i>
 </p>

@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Escribanía LP - Generador de Formulario 08",
+  title: "Escribanía RM - Generador de Formulario 08",
   description: "Carga y generación profesional de formularios de transferencia vehicular.",
   icons: {
     icon: "/logo.svg",

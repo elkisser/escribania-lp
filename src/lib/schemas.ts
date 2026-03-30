@@ -35,7 +35,7 @@ export const VehiculoSchema = z.object({
   tipo: z.string().min(1, 'El tipo de vehículo es requerido'),
   marca: z.string().min(1, 'La marca es requerida'),
   modelo: z.string().min(1, 'El modelo es requerido'),
-  dominio: z.string().min(6, 'Patente/Dominio inválido'),
+  dominio: z.string().min(3, 'Patente/Dominio inválido'),
   motor: z.string().optional().or(z.literal('')), // Campo legado
   chasis: z.string().optional().or(z.literal('')), // Campo legado
   n_motor: z.string().min(5, 'El número de motor es requerido'),

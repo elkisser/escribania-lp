@@ -237,7 +237,7 @@ export default function Wizard({ type, initialData, onSuccess }: WizardProps) {
                 {currentStep === 1 && <StepPerson type="vendedor_condominio" />}
                 {currentStep === 2 && <StepPerson type="comprador" />}
                 {currentStep === 3 && <StepPerson type="comprador_condominio" />}
-                {currentStep === 4 && <StepVehicle />}
+                {currentStep === 4 && <StepVehicle type={type} />}
                 {currentStep === 5 && <StepOperation />}
               </div>
 
