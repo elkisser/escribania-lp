@@ -82,19 +82,22 @@ export function StepPerson({ type }: { type: 'vendedor' | 'comprador' | 'vendedo
 
   return (
     <div className="space-y-8 md:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20 md:pb-0">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
         <FormInput label="Nombre y apellido completo" name={`${prefix}nombre`} placeholder="Ej: Juan Perez" />
         <FormInput label="DNI" name={`${prefix}dni`} placeholder="Ej: 30.123.456" />
+        <FormInput label="CUIL/CUIT" name={`${prefix}cuit`} placeholder="Ej: 20-30123456-7" />
       </div>
 
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
-        <FormInput label="CUIL/CUIT" name={`${prefix}cuit`} placeholder="Ej: 20-30123456-7" />
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-10">
+        <FormInput label="País" name={`${prefix}pais`} placeholder="Ej: Argentina" />
+        <FormInput label="Sexo" name={`${prefix}sexo`} placeholder="Ej: Masculino" />
         <FormInput label="Fecha Nacimiento" name={`${prefix}fecha_nacimiento`} type="date" />
         <FormInput label="Lugar de Nacimiento" name={`${prefix}lugar_nacimiento`} placeholder="Provincia / País" />
       </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
+        <FormInput label="Autoridad (o País) que lo expidio" name={`${prefix}autoridad_o_pais_expidio`} placeholder="Ej: RNP" />
         <FormInput label="Nombre Cónyuge" name={`${prefix}nombre_conyugue`} placeholder="Si corresponde" />
         <FormInput label="Teléfono" name={`${prefix}telefono`} placeholder="Ej: (11) 1234-5678" />
       </div>
@@ -146,6 +149,7 @@ export function StepVehicle({ type }: { type: 'auto' | 'moto' }) {
 
   return (
     <div className="space-y-8 md:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20 md:pb-0">
+      {/* IZQUIERDA */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
         <FormInput label="Tipo de Vehículo" name="vehiculo.tipo" placeholder="Ej: SEDAN 4 PUERTAS, MOTOCICLETA, PICK-UP" />
         <FormInput label="Dominio" name="vehiculo.dominio" placeholder="Ej: AA123BB" />
@@ -156,8 +160,14 @@ export function StepVehicle({ type }: { type: 'auto' | 'moto' }) {
         <FormInput label="Modelo" name="vehiculo.modelo" placeholder="Ej: Corolla" />
       </div>
 
+      {/* DERECHA */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
+        <FormInput label="Marca Motor" name="vehiculo.motor" placeholder="Ej: Honda i-VTEC" />
         <FormInput label="Número de Motor" name="vehiculo.n_motor" placeholder="Requerido" />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
+        <FormInput label={isMoto ? "Marca de Cuadro" : "Marca de Chasis"} name="vehiculo.chasis" placeholder="Ej: 2023" />
         <FormInput label={isMoto ? "Número de Cuadro" : "Número de Chasis"} name="vehiculo.n_chasis" placeholder="Requerido" />
       </div>
 
@@ -174,6 +184,7 @@ export function StepOperation() {
         <FormInput label="Fecha de Operación" name="fecha" type="date" icon={<Calendar className="w-5 h-5" />} />
       </div>
       <FormInput label="Lugar de Firma" name="lugar" placeholder="Ciudad, Provincia" icon={<MapPin className="w-5 h-5" />} />
+      <FormInput label="Observaciones" name="observaciones" placeholder="Observaciones adicionales" />
     </div>
   );
 }

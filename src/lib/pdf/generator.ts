@@ -30,6 +30,43 @@ export async function generate08(data: any, type: 'auto' | 'moto') {
   const mappings = type === 'auto' ? AUTO_MAPPING : MOTO_MAPPING;
 
   function getValue(path: string, obj: any) {
+    if (path.endsWith('_day') || path.endsWith('_month') || path.endsWith('_year')) {
+      const parts = path.split('_');
+      const suffix = parts.pop();
+      const baseField = parts.join('_');
+      const fullDate = baseField.split('.').reduce((acc, part) => acc && acc[part], obj);
+      
+      if (!fullDate || typeof fullDate !== 'string') return '';
+      
+      // Intentar parsear YYYY-MM-DD (estándar de input type="date")
+      const dateParts = fullDate.split('-');
+      if (dateParts.length === 3) {
+        if (suffix === 'year') return dateParts[0];
+        if (suffix === 'month') return dateParts[1];
+        if (suffix === 'day') return dateParts[2];
+      }
+      
+      // Intentar parsear DD/MM/YYYY
+      const datePartsSlash = fullDate.split('/');
+      if (datePartsSlash.length === 3) {
+        if (suffix === 'day') return datePartsSlash[0];
+        if (suffix === 'month') return datePartsSlash[1];
+        if (suffix === 'year') return datePartsSlash[2];
+      }
+      
+      return '';
+    }
+
+    // Nueva lógica para campos combinados (País - Sexo)
+    if (path.endsWith('_pais_sexo')) {
+      const base = path.replace('_pais_sexo', '');
+      const pais = base.split('.').reduce((acc, part) => acc && acc[part], obj)?.pais;
+      const sexo = base.split('.').reduce((acc, part) => acc && acc[part], obj)?.sexo;
+      
+      if (!pais && !sexo) return '';
+      return `(${pais || ''}${pais && sexo ? ' - ' : ''}${sexo || ''})`;
+    }
+
     return path.split('.').reduce((acc, part) => acc && acc[part], obj);
   }
 
@@ -51,6 +88,41 @@ export async function generate08(data: any, type: 'auto' | 'moto') {
             y: map.y,
             size: map.size || 12,
             font: boldFont,
+            color: rgb(0, 0, 0),
+          });
+        }
+      } else if (map.maxWidth) {
+        const text = String(value);
+        const fontSize = map.size || 10;
+        const words = text.split(' ');
+        let line = '';
+        let currentY = map.y;
+
+        for (const word of words) {
+          const testLine = line + word + ' ';
+          const testLineWidth = font.widthOfTextAtSize(testLine, fontSize);
+          
+          if (testLineWidth > map.maxWidth && line !== '') {
+            targetPage.drawText(line.trim(), {
+              x: map.x,
+              y: currentY,
+              size: fontSize,
+              font: font,
+              color: rgb(0, 0, 0),
+            });
+            line = word + ' ';
+            currentY -= (map.lineHeight || fontSize * 1.2);
+          } else {
+            line = testLine;
+          }
+        }
+        
+        if (line !== '') {
+          targetPage.drawText(line.trim(), {
+            x: map.x,
+            y: currentY,
+            size: fontSize,
+            font: font,
             color: rgb(0, 0, 0),
           });
         }

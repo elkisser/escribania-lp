@@ -2,9 +2,10 @@ import { z } from 'zod';
 
 export const PersonaSchema = z.object({
   nombre: z.string().min(2, 'El nombre/apellido completo es requerido'),
+  pais: z.string().min(1, 'El país es requerido'),
+  sexo: z.string().min(1, 'El sexo es requerido'),
   dni: z.string().min(7, 'DNI inválido'),
   cuit: z.string().optional().or(z.literal('')),
-  fecha_nacimiento: z.string().optional().or(z.literal('')),
   domicilio: z.string().optional().or(z.literal('')),
   email: z.string().email('Email inválido').optional().or(z.literal('')),
   telefono: z.string().optional().or(z.literal('')),
@@ -23,9 +24,11 @@ export const PersonaSchema = z.object({
   domicilio_real_cp: z.string().optional().or(z.literal('')),
   domicilio_real_localidad: z.string().optional().or(z.literal('')),
   // Otros
+  autoridad_o_pais_expidio: z.string().optional().or(z.literal('')),
   domicilio_departamento_o_partido: z.string().optional().or(z.literal('')),
   domicilio_provincia: z.string().optional().or(z.literal('')),
   lugar_nacimiento: z.string().optional().or(z.literal('')),
+  fecha_nacimiento: z.string().optional().or(z.literal('')),
   nombre_conyugue: z.string().optional().or(z.literal('')),
 });
 
@@ -38,9 +41,9 @@ export const VehiculoSchema = z.object({
   dominio: z.string().min(3, 'Patente/Dominio inválido'),
   motor: z.string().optional().or(z.literal('')), // Campo legado
   chasis: z.string().optional().or(z.literal('')), // Campo legado
-  n_motor: z.string().min(5, 'El número de motor es requerido'),
-  n_chasis: z.string().min(5, 'El número de chasis es requerido'),
-  uso: z.string().default('Privado'),
+  n_motor: z.string().optional().or(z.literal('')),
+  n_chasis: z.string().optional().or(z.literal('')),
+  uso: z.string().optional().or(z.literal('')),
 });
 
 
@@ -80,6 +83,7 @@ export const TramiteSchema = z.object({
   precio: z.string().min(1, 'El precio es requerido'),
   fecha: z.string().min(1, 'La fecha es requerida'),
   lugar: z.string().min(1, 'El lugar de firma es requerido'),
+  observaciones: z.string().optional().or(z.literal('')),
 });
 
 

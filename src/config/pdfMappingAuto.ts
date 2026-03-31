@@ -5,6 +5,8 @@ export interface PDFMapItem {
   y: number;
   size?: number;
   isCheckbox?: boolean;
+  maxWidth?: number;
+  lineHeight?: number;
 }
 
 const generateMirror = (items: PDFMapItem[]): PDFMapItem[] => {
@@ -27,6 +29,9 @@ const BASE_AUTO_MAPPING: PDFMapItem[] = [
   // SECCIÓN D: COMPRADOR
   { field: 'comprador.nombre', page: 0, x: 150, y: 639 },
   { field: 'comprador_condominio.nombre', page: 0, x: 390, y: 633 },
+
+  { field: 'comprador._pais_sexo', page: 0, x: 390, y: 633 },
+  { field: 'comprador_condominio._pais_sexo', page: 0, x: 390, y: 427 },
 
   { field: 'comprador.email', page: 0, x: 160, y: 606 },
   { field: 'comprador_condominio.email', page: 0, x: 376, y: 604 },
@@ -77,13 +82,20 @@ const BASE_AUTO_MAPPING: PDFMapItem[] = [
   { field: 'comprador.dni', page: 0, x: 130, y: 379 },
   { field: 'comprador_condominio.dni', page: 0, x: 350, y: 381 },
 
-  { field: 'comprador.cuit', page: 0, x: 190, y: 355 },
-  { field: 'comprador_condominio.cuit', page: 0, x: 410, y: 356 },
+  { field: 'comprador.autoridad_o_pais_expidio', page: 0, x: 220, y: 379 },
+  { field: 'comprador_condominio.autoridad_o_pais_expidio', page: 0, x: 440, y: 381 },
 
   { field: 'comprador.lugar_nacimiento', page: 0, x: 202, y: 340 },
   { field: 'comprador_condominio.lugar_nacimiento', page: 0, x: 422, y: 341 },
 
-  
+  { field: 'comprador.fecha_nacimiento_day', page: 0, x: 126, y: 309, size: 8 },
+  { field: 'comprador.fecha_nacimiento_month', page: 0, x: 149, y: 309, size: 8 },
+  { field: 'comprador.fecha_nacimiento_year', page: 0, x: 166, y: 309, size: 8 },
+
+  { field: 'comprador_condominio.fecha_nacimiento_day', page: 0, x: 346, y: 310, size: 8 },
+  { field: 'comprador_condominio.fecha_nacimiento_month', page: 0, x: 369, y: 310, size: 8 },
+  { field: 'comprador_condominio.fecha_nacimiento_year', page: 0, x: 389, y: 310, size: 8 },
+
   { field: 'comprador.nombre_conyugue', page: 0, x: 150, y: 287 },
   { field: 'comprador_condominio.nombre_conyugue', page: 0, x: 370, y: 287 },
 
@@ -93,8 +105,9 @@ const BASE_AUTO_MAPPING: PDFMapItem[] = [
   { field: 'vehiculo.tipo', page: 0, x: 158, y: 96 },
   { field: 'vehiculo.modelo', page: 0, x: 170, y: 82 },
 
-  { field: 'vehiculo.n_motor', page: 0, x: 630, y: 123 },
-  { field: 'vehiculo.marca', page: 0, x: 430, y: 111 },
+  { field: 'vehiculo.motor', page: 0, x: 420, y: 138 },
+  { field: 'vehiculo.n_motor', page: 0, x: 410, y: 125 },
+  { field: 'vehiculo.marca', page: 0, x: 430, y: 112 },
   { field: 'vehiculo.n_chasis', page: 0, x: 415, y: 98 },
   { field: 'vehiculo.uso', page: 0, x: 385, y: 84 },
 
@@ -113,6 +126,9 @@ const BASE_AUTO_MAPPING: PDFMapItem[] = [
 
   { field: 'comprador_condominio.nombre', page: 1, x: 300, y: 343 },
   { field: 'comprador_condominio.dni', page: 1, x: 260, y: 287 },
+
+  // OBSERVACIONES
+  { field: 'observaciones', page: 1, x: 50, y: 200, maxWidth: 500, lineHeight: 12 },
 ];
 
 

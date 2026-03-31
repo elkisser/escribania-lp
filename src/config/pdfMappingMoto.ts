@@ -21,6 +21,9 @@ const BASE_MOTO_MAPPING: PDFMapItem[] = [
   { field: 'comprador.nombre', page: 0, x: 150, y: 636 },
   { field: 'comprador_condominio.nombre', page: 0, x: 390, y: 630 },
 
+  { field: 'comprador._pais_sexo', page: 0, x: 390, y: 630 },
+  { field: 'comprador_condominio._pais_sexo', page: 0, x: 390, y: 424 },
+
   { field: 'comprador.email', page: 0, x: 160, y: 603 },
   { field: 'comprador_condominio.email', page: 0, x: 376, y: 601 },
 
@@ -76,7 +79,14 @@ const BASE_MOTO_MAPPING: PDFMapItem[] = [
   { field: 'comprador.lugar_nacimiento', page: 0, x: 202, y: 336 },
   { field: 'comprador_condominio.lugar_nacimiento', page: 0, x: 422, y: 337 },
 
-  
+  { field: 'comprador.fecha_nacimiento_day', page: 0, x: 126, y: 296, size: 8 },
+  { field: 'comprador.fecha_nacimiento_month', page: 0, x: 145, y: 296, size: 8 },
+  { field: 'comprador.fecha_nacimiento_year', page: 0, x: 164, y: 296, size: 8 },
+
+  { field: 'comprador_condominio.fecha_nacimiento_day', page: 0, x: 332, y: 337, size: 8 },
+  { field: 'comprador_condominio.fecha_nacimiento_month', page: 0, x: 357, y: 337, size: 8 },
+  { field: 'comprador_condominio.fecha_nacimiento_year', page: 0, x: 382, y: 337, size: 8 },
+
   { field: 'comprador.nombre_conyugue', page: 0, x: 150, y: 280 },
   { field: 'comprador_condominio.nombre_conyugue', page: 0, x: 370, y: 281 },
 
@@ -106,6 +116,9 @@ const BASE_MOTO_MAPPING: PDFMapItem[] = [
 
   { field: 'comprador_condominio.nombre', page: 1, x: 290, y: 334 },
   { field: 'comprador_condominio.dni', page: 1, x: 250, y: 277 },
+
+  // OBSERVACIONES
+  { field: 'observaciones', page: 1, x: 100, y: 100, maxWidth: 400, lineHeight: 12 },
 ];
 
 export const MOTO_MAPPING: PDFMapItem[] = [
