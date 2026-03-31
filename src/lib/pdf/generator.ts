@@ -29,11 +29,92 @@ export async function generate08(data: any, type: 'auto' | 'moto') {
 
   const mappings = type === 'auto' ? AUTO_MAPPING : MOTO_MAPPING;
 
+  function splitTextIntoLines(text: string, font: any, fontSize: number, maxWidth: number): string[] {
+    const lines: string[] = [];
+    const paragraphs = text.split(/\r?\n/);
+
+    for (const paragraph of paragraphs) {
+      if (paragraph.trim() === '') {
+        lines.push('');
+        continue;
+      }
+
+      const words = paragraph.split(/\s+/);
+      let currentLine = '';
+
+      for (const word of words) {
+        let wordToProcess = word;
+
+        // Si la palabra sola es más ancha que el máximo, hay que cortarla por caracteres
+        if (font.widthOfTextAtSize(wordToProcess, fontSize) > maxWidth) {
+          // Intentar llenar lo que queda de la línea actual primero
+          if (currentLine !== '') {
+            let part = '';
+            for (let i = 0; i < wordToProcess.length; i++) {
+              const testPart = currentLine + ' ' + part + wordToProcess[i];
+              if (font.widthOfTextAtSize(testPart, fontSize) > maxWidth) {
+                if (part !== '') {
+                  lines.push(currentLine + ' ' + part);
+                  wordToProcess = wordToProcess.slice(i);
+                } else {
+                  lines.push(currentLine);
+                }
+                currentLine = '';
+                break;
+              }
+              part += wordToProcess[i];
+            }
+          }
+
+          // Seguir cortando el resto de la palabra
+          while (font.widthOfTextAtSize(wordToProcess, fontSize) > maxWidth) {
+            let part = '';
+            for (let i = 0; i < wordToProcess.length; i++) {
+              const testPart = part + wordToProcess[i];
+              if (font.widthOfTextAtSize(testPart, fontSize) > maxWidth) {
+                if (part === '') {
+                  part = wordToProcess[i];
+                  wordToProcess = wordToProcess.slice(1);
+                } else {
+                  lines.push(part);
+                  wordToProcess = wordToProcess.slice(i);
+                }
+                part = '';
+                break;
+              }
+              part = testPart;
+            }
+          }
+        }
+
+        const testLine = currentLine === '' ? wordToProcess : currentLine + ' ' + wordToProcess;
+        const testLineWidth = font.widthOfTextAtSize(testLine, fontSize);
+
+        if (testLineWidth > maxWidth) {
+          if (currentLine !== '') {
+            lines.push(currentLine);
+            currentLine = wordToProcess;
+          } else {
+            currentLine = wordToProcess;
+          }
+        } else {
+          currentLine = testLine;
+        }
+      }
+
+      if (currentLine !== '') {
+        lines.push(currentLine);
+      }
+    }
+
+    return lines;
+  }
+
   function getValue(path: string, obj: any) {
     if (path.endsWith('_day') || path.endsWith('_month') || path.endsWith('_year')) {
       const parts = path.split('_');
       const suffix = parts.pop();
-      const baseField = parts.join('_');
+       const baseField = parts.join('_');
       const fullDate = baseField.split('.').reduce((acc, part) => acc && acc[part], obj);
       
       if (!fullDate || typeof fullDate !== 'string') return '';
@@ -59,12 +140,30 @@ export async function generate08(data: any, type: 'auto' | 'moto') {
 
     // Nueva lógica para campos combinados (País - Sexo)
     if (path.endsWith('_pais_sexo')) {
-      const base = path.replace('_pais_sexo', '');
-      const pais = base.split('.').reduce((acc, part) => acc && acc[part], obj)?.pais;
-      const sexo = base.split('.').reduce((acc, part) => acc && acc[part], obj)?.sexo;
+      const base = path.replace('_pais_sexo', '').replace(/\.$/, '');
+      const person = base.split('.').reduce((acc, part) => acc && acc[part], obj);
+      const pais = person?.pais;
+      const sexo = person?.sexo;
       
       if (!pais && !sexo) return '';
       return `(${pais || ''}${pais && sexo ? ' - ' : ''}${sexo || ''})`;
+    }
+
+    // Nueva lógica para Lugar y Fecha unificados
+    if (path === '_lugar_fecha') {
+      const lugar = obj.lugar || '';
+      const fechaFull = obj.fecha || '';
+      
+      let fechaFormatted = fechaFull;
+      if (fechaFull && fechaFull.includes('-')) {
+        const parts = fechaFull.split('-');
+        if (parts.length === 3) {
+          fechaFormatted = `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+      }
+      
+      if (!lugar && !fechaFormatted) return '';
+      return `${lugar}${lugar && fechaFormatted ? ', ' : ''}${fechaFormatted}`;
     }
 
     return path.split('.').reduce((acc, part) => acc && acc[part], obj);
@@ -94,15 +193,17 @@ export async function generate08(data: any, type: 'auto' | 'moto') {
       } else if (map.maxWidth) {
         const text = String(value);
         const fontSize = map.size || 10;
-        const words = text.split(' ');
-        let line = '';
+        const lines = splitTextIntoLines(text, font, fontSize, map.maxWidth);
         let currentY = map.y;
+        const lineHeight = map.lineHeight || fontSize * 1.2;
 
-        for (const word of words) {
-          const testLine = line + word + ' ';
-          const testLineWidth = font.widthOfTextAtSize(testLine, fontSize);
+        lines.forEach((line, index) => {
+          const isLastLine = index === lines.length - 1 || line.trim() === '';
+          const words = line.trim().split(/\s+/);
+          const lineWidth = font.widthOfTextAtSize(line.trim(), fontSize);
           
-          if (testLineWidth > map.maxWidth && line !== '') {
+          if (isLastLine || words.length <= 1 || lineWidth < map.maxWidth! * 0.8) {
+            // Última línea, línea de una sola palabra o línea muy corta: alineación normal a la izquierda
             targetPage.drawText(line.trim(), {
               x: map.x,
               y: currentY,
@@ -110,22 +211,27 @@ export async function generate08(data: any, type: 'auto' | 'moto') {
               font: font,
               color: rgb(0, 0, 0),
             });
-            line = word + ' ';
-            currentY -= (map.lineHeight || fontSize * 1.2);
           } else {
-            line = testLine;
+            // Justificado: dibujar palabra por palabra con espacio adicional
+            const totalWordsWidth = words.reduce((acc, word) => acc + font.widthOfTextAtSize(word, fontSize), 0);
+            const totalSpaceNeeded = map.maxWidth! - totalWordsWidth;
+            const spaceBetweenWords = totalSpaceNeeded / (words.length - 1);
+            
+            let currentX = map.x;
+            words.forEach((word) => {
+              targetPage.drawText(word, {
+                x: currentX,
+                y: currentY,
+                size: fontSize,
+                font: font,
+                color: rgb(0, 0, 0),
+              });
+              currentX += font.widthOfTextAtSize(word, fontSize) + spaceBetweenWords;
+            });
           }
-        }
-        
-        if (line !== '') {
-          targetPage.drawText(line.trim(), {
-            x: map.x,
-            y: currentY,
-            size: fontSize,
-            font: font,
-            color: rgb(0, 0, 0),
-          });
-        }
+          
+          currentY -= lineHeight;
+        });
       } else {
         targetPage.drawText(String(value), {
           x: map.x,

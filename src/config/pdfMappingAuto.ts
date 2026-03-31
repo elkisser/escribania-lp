@@ -21,17 +21,20 @@ const generateMirror = (items: PDFMapItem[]): PDFMapItem[] => {
 const BASE_AUTO_MAPPING: PDFMapItem[] = [
   // ----------- PÁGINA 1: FRENTE ORIGINAL (0) -----------
   // SECCIÓN A: LUGAR Y FECHA
-  { field: 'lugar', page: 0, x: 185, y: 728 },
-  { field: 'fecha', page: 0, x: 285, y: 728 },
+  { field: '_lugar_fecha', page: 0, x: 185, y: 728 },
   { field: 'precio', page: 0, x: 145, y: 706 },
   { field: 'vehiculo.dominio', page: 0, x: 291, y: 706 },
 
   // SECCIÓN D: COMPRADOR
+  { field: 'comprador.porcentaje_entero', page: 0, x: 127, y: 653 },
+  { field: 'comprador.porcentaje_decimal', page: 0, x: 155, y: 653 },
   { field: 'comprador.nombre', page: 0, x: 150, y: 639 },
-  { field: 'comprador_condominio.nombre', page: 0, x: 390, y: 633 },
+  { field: 'comprador._pais_sexo', page: 0, x: 140, y: 620 },
 
-  { field: 'comprador._pais_sexo', page: 0, x: 390, y: 633 },
-  { field: 'comprador_condominio._pais_sexo', page: 0, x: 390, y: 427 },
+  { field: 'comprador_condominio.porcentaje_entero', page: 0, x: 347, y: 647 },
+  { field: 'comprador_condominio.porcentaje_decimal', page: 0, x: 373, y: 647 },
+  { field: 'comprador_condominio.nombre', page: 0, x: 390, y: 633 },
+  { field: 'comprador_condominio._pais_sexo', page: 0, x: 360, y: 618 },
 
   { field: 'comprador.email', page: 0, x: 160, y: 606 },
   { field: 'comprador_condominio.email', page: 0, x: 376, y: 604 },
@@ -54,13 +57,13 @@ const BASE_AUTO_MAPPING: PDFMapItem[] = [
   { field: 'comprador.domicilio_legal_localidad', page: 0, x: 180, y: 539 },
   { field: 'comprador_condominio.domicilio_legal_localidad', page: 0, x: 410, y: 540 },
 
-  { field: 'comprador.domicilio_departamento_o_partido', page: 0, x: 145, y: 524 },
-  { field: 'comprador_condominio.domicilio_departamento_o_partido', page: 0, x: 355, y: 525 },
+  { field: 'comprador.domicilio_departamento_o_partido', page: 0, x: 127, y: 524 },
+  { field: 'comprador_condominio.domicilio_departamento_o_partido', page: 0, x: 347, y: 525 },
   { field: 'comprador.domicilio_provincia', page: 0, x: 265, y: 524 },
   { field: 'comprador_condominio.domicilio_provincia', page: 0, x: 485, y: 525 },
 
-  { field: 'comprador.domicilio_real', page: 0, x: 180, y: 506 },
-  { field: 'comprador_condominio.domicilio_real', page: 0, x: 410, y: 507 },
+  { field: 'comprador.domicilio_real', page: 0, x: 160, y: 506 },
+  { field: 'comprador_condominio.domicilio_real', page: 0, x: 390, y: 507 },
 
   { field: 'comprador.domicilio_real_numero', page: 0, x: 142, y: 488 },
   { field: 'comprador_condominio.domicilio_real_numero', page: 0, x: 363, y: 489 },
@@ -71,11 +74,11 @@ const BASE_AUTO_MAPPING: PDFMapItem[] = [
   { field: 'comprador.domicilio_real_cp', page: 0, x: 284, y: 488 },
   { field: 'comprador_condominio.domicilio_real_cp', page: 0, x: 504, y: 489 },
 
-  { field: 'comprador.domicilio_real_localidad', page: 0, x: 180, y: 468 },
-  { field: 'comprador_condominio.domicilio_real_localidad', page: 0, x: 410, y: 469 },
+  { field: 'comprador.domicilio_real_localidad', page: 0, x: 160, y: 468 },
+  { field: 'comprador_condominio.domicilio_real_localidad', page: 0, x: 390, y: 469 },
 
-  { field: 'comprador.domicilio_departamento_o_partido', page: 0, x: 145, y: 447 },
-  { field: 'comprador_condominio.domicilio_departamento_o_partido', page: 0, x: 365, y: 449 },
+  { field: 'comprador.domicilio_departamento_o_partido', page: 0, x: 127, y: 447 },
+  { field: 'comprador_condominio.domicilio_departamento_o_partido', page: 0, x: 347, y: 449 },
   { field: 'comprador.domicilio_provincia', page: 0, x: 265, y: 447 },
   { field: 'comprador_condominio.domicilio_provincia', page: 0, x: 485, y: 449 },
 
@@ -84,6 +87,9 @@ const BASE_AUTO_MAPPING: PDFMapItem[] = [
 
   { field: 'comprador.autoridad_o_pais_expidio', page: 0, x: 220, y: 379 },
   { field: 'comprador_condominio.autoridad_o_pais_expidio', page: 0, x: 440, y: 381 },
+
+  { field: 'comprador.cuit', page: 0, x: 190, y: 355 },
+  { field: 'comprador_condominio.cuit', page: 0, x: 410, y: 357 },
 
   { field: 'comprador.lugar_nacimiento', page: 0, x: 202, y: 340 },
   { field: 'comprador_condominio.lugar_nacimiento', page: 0, x: 422, y: 341 },
@@ -96,8 +102,8 @@ const BASE_AUTO_MAPPING: PDFMapItem[] = [
   { field: 'comprador_condominio.fecha_nacimiento_month', page: 0, x: 369, y: 310, size: 8 },
   { field: 'comprador_condominio.fecha_nacimiento_year', page: 0, x: 389, y: 310, size: 8 },
 
-  { field: 'comprador.nombre_conyugue', page: 0, x: 150, y: 287 },
-  { field: 'comprador_condominio.nombre_conyugue', page: 0, x: 370, y: 287 },
+  { field: 'comprador.nombre_conyugue', page: 0, x: 150, y: 284 },
+  { field: 'comprador_condominio.nombre_conyugue', page: 0, x: 370, y: 285 },
 
   // SECCIÓN F: VEHÍCULO
   { field: 'vehiculo.dominio', page: 0, x: 260, y: 123 },
@@ -113,22 +119,40 @@ const BASE_AUTO_MAPPING: PDFMapItem[] = [
 
   // ----------- PÁGINA 2: DORSO ORIGINAL (1) -----------
   // SECCIÓN I: VENDEDOR
+  { field: 'vendedor.porcentaje_entero', page: 1, x: 32, y: 783 },
+  { field: 'vendedor.porcentaje_decimal', page: 1, x: 53, y: 783 },
+
   { field: 'vendedor.nombre', page: 1, x: 90, y: 765 },
   { field: 'vendedor.dni', page: 1, x: 50, y: 629 },
+  { field: 'vendedor.autoridad_o_pais_expidio', page: 1, x: 138, y: 629 },
+
+  { field: 'vendedor.nombre_conyugue', page: 1, x: 88, y: 559 },
+  { field: 'vendedor.dni_conyugue', page: 1, x: 50, y: 458 },
+  { field: 'vendedor.autoridad_o_pais_expidio_conyugue', page: 1, x: 140, y: 458 },
 
   // SECION J: CONDOMINIO VENDEDOR (Dorso)
+  { field: 'vendedor_condominio.porcentaje_entero', page: 1, x: 248, y: 779 },
+  { field: 'vendedor_condominio.porcentaje_decimal', page: 1, x: 272, y: 779 },
+
   { field: 'vendedor_condominio.nombre', page: 1, x: 300, y: 764 },
   { field: 'vendedor_condominio.dni', page: 1, x: 260, y: 629 },
+  { field: 'vendedor_condominio.autoridad_o_pais_expidio', page: 1, x: 358, y: 629 },
+
+  { field: 'vendedor_condominio.nombre_conyugue', page: 1, x: 300, y: 560 },
+  { field: 'vendedor_condominio.dni_conyugue', page: 1, x: 260, y: 459 },
+  { field: 'vendedor_condominio.autoridad_o_pais_expidio_conyugue', page: 1, x: 350, y: 459 },
 
   // SECCION E: CONDOMINIO COMPRADOR (Frente)
   { field: 'comprador.nombre', page: 1, x: 90, y: 342 },
   { field: 'comprador.dni', page: 1, x: 50, y: 286 },
+  { field: 'comprador.autoridad_o_pais_expidio', page: 1, x: 140, y: 286 },
 
   { field: 'comprador_condominio.nombre', page: 1, x: 300, y: 343 },
   { field: 'comprador_condominio.dni', page: 1, x: 260, y: 287 },
+  { field: 'comprador_condominio.autoridad_o_pais_expidio', page: 1, x: 350, y: 287 },
 
   // OBSERVACIONES
-  { field: 'observaciones', page: 1, x: 50, y: 200, maxWidth: 500, lineHeight: 12 },
+  { field: 'observaciones', page: 1, x: 50, y: 205, maxWidth: 380, lineHeight: 12 },
 ];
 
 

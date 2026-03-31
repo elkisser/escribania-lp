@@ -30,6 +30,11 @@ export const PersonaSchema = z.object({
   lugar_nacimiento: z.string().optional().or(z.literal('')),
   fecha_nacimiento: z.string().optional().or(z.literal('')),
   nombre_conyugue: z.string().optional().or(z.literal('')),
+  dni_conyugue: z.string().optional().or(z.literal('')),
+  autoridad_o_pais_expidio_conyugue: z.string().optional().or(z.literal('')),
+
+  porcentaje_entero: z.string().regex(/^\d+$/, 'Debe ser un número').refine((val) => Number(val) <= 100, 'Máximo 100'),
+  porcentaje_decimal: z.string().regex(/^\d{1,2}$/, 'Máximo 2 dígitos').refine((val) => Number(val) <= 99, 'Máximo 99').optional().or(z.literal('00')),
 });
 
 
@@ -39,8 +44,8 @@ export const VehiculoSchema = z.object({
   marca: z.string().min(1, 'La marca es requerida'),
   modelo: z.string().min(1, 'El modelo es requerido'),
   dominio: z.string().min(3, 'Patente/Dominio inválido'),
-  motor: z.string().optional().or(z.literal('')), // Campo legado
-  chasis: z.string().optional().or(z.literal('')), // Campo legado
+  motor: z.string().optional().or(z.literal('')),
+  chasis: z.string().optional().or(z.literal('')), 
   n_motor: z.string().optional().or(z.literal('')),
   n_chasis: z.string().optional().or(z.literal('')),
   uso: z.string().optional().or(z.literal('')),
@@ -71,7 +76,13 @@ export const PersonaOpcionalSchema = z.object({
   domicilio_departamento_o_partido: z.string().optional().or(z.literal('')),
   domicilio_provincia: z.string().optional().or(z.literal('')),
   lugar_nacimiento: z.string().optional().or(z.literal('')),
+
   nombre_conyugue: z.string().optional().or(z.literal('')),
+  dni_conyugue: z.string().optional().or(z.literal('')),
+  autoridad_o_pais_expidio_conyugue: z.string().optional().or(z.literal('')),
+
+  porcentaje_entero: z.string().optional().or(z.literal('')),
+  porcentaje_decimal: z.string().optional().or(z.literal('')),
 });
 
 export const TramiteSchema = z.object({

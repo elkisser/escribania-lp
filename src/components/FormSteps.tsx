@@ -48,6 +48,11 @@ export function FormInput({ label, name, icon, ...props }: FormInputProps) {
   const error = (errors as any)[name.split('.')[0]]?.[name.split('.')[1]] || (errors as any)[name];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Si hay un onChange personalizado en props, lo llamamos primero
+    if (props.onChange) {
+      props.onChange(e);
+    }
+
     let val = e.target.value;
     
     if (name.includes('dni')) val = formatDNI(val);
@@ -55,7 +60,6 @@ export function FormInput({ label, name, icon, ...props }: FormInputProps) {
     else if (name.includes('precio')) val = formatCurrency(val);
     
     setValue(name, val, { shouldValidate: true });
-
   };
 
   return (
@@ -79,6 +83,8 @@ export function FormInput({ label, name, icon, ...props }: FormInputProps) {
 
 export function StepPerson({ type }: { type: 'vendedor' | 'comprador' | 'vendedor_condominio' | 'comprador_condominio' }) {
   const prefix = `${type}.`;
+  const { watch, setValue } = useFormContext();
+  const porcentajeEntero = watch(`${prefix}porcentaje_entero`);
 
   return (
     <div className="space-y-8 md:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20 md:pb-0">
@@ -88,18 +94,62 @@ export function StepPerson({ type }: { type: 'vendedor' | 'comprador' | 'vendedo
         <FormInput label="CUIL/CUIT" name={`${prefix}cuit`} placeholder="Ej: 20-30123456-7" />
       </div>
 
-
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-10">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
         <FormInput label="País" name={`${prefix}pais`} placeholder="Ej: Argentina" />
         <FormInput label="Sexo" name={`${prefix}sexo`} placeholder="Ej: Masculino" />
         <FormInput label="Fecha Nacimiento" name={`${prefix}fecha_nacimiento`} type="date" />
-        <FormInput label="Lugar de Nacimiento" name={`${prefix}lugar_nacimiento`} placeholder="Provincia / País" />
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
+        <FormInput label="Lugar de Nacimiento" name={`${prefix}lugar_nacimiento`} placeholder="Provincia / País" />
         <FormInput label="Autoridad (o País) que lo expidio" name={`${prefix}autoridad_o_pais_expidio`} placeholder="Ej: RNP" />
-        <FormInput label="Nombre Cónyuge" name={`${prefix}nombre_conyugue`} placeholder="Si corresponde" />
         <FormInput label="Teléfono" name={`${prefix}telefono`} placeholder="Ej: (11) 1234-5678" />
+      </div>
+
+      <div className="space-y-6 md:space-y-8 pt-6 border-t border-slate-100">
+        <h3 className="text-[10px] md:text-xs font-black text-slate-400 uppercase tracking-[0.2em]">Porcentajes</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
+          <FormInput
+            label="Porcentaje Entero"
+            name={`${prefix}porcentaje_entero`}
+            placeholder="Ej: 100"
+            onChange={(e) => {
+              let value = e.target.value.replace(/\D/g, ''); // solo números
+              if (value.length > 3) value = value.slice(0, 3);
+              let num = Number(value);
+
+              if (num > 100) value = '100';
+              
+              // Si es 100, el decimal DEBE ser 00
+              if (value === '100') {
+                setValue(`${prefix}porcentaje_decimal`, '00');
+              }
+
+              e.target.value = value;
+            }}
+          />
+          
+          <FormInput
+            label="Porcentaje Decimal"
+            name={`${prefix}porcentaje_decimal`}
+            placeholder="Ej: 00"
+            disabled={porcentajeEntero === '100'}
+            onChange={(e) => {
+              let value = e.target.value.replace(/\D/g, '');
+              if (value.length > 2) value = value.slice(0, 2);
+              e.target.value = value;
+            }}
+          />
+        </div>
+      </div>
+
+      <div className="space-y-6 md:space-y-8 pt-6 border-t border-slate-100">
+        <h3 className="text-[10px] md:text-xs font-black text-slate-400 uppercase tracking-[0.2em]">Conyugue</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
+          <FormInput label="Nombre Cónyuge" name={`${prefix}nombre_conyugue`} placeholder="Si corresponde" />
+          <FormInput label="DNI Cónyuge" name={`${prefix}dni_conyugue`} placeholder="Si corresponde" />
+          <FormInput label="Autoridad (o País) que lo expidio" name={`${prefix}autoridad_o_pais_expidio_conyugue`} placeholder="Ej: RNP" />
+        </div>
       </div>
 
       <div className="space-y-6 md:space-y-8 pt-6 border-t border-slate-100">
@@ -137,7 +187,6 @@ export function StepPerson({ type }: { type: 'vendedor' | 'comprador' | 'vendedo
           <FormInput label="Provincia" name={`${prefix}domicilio_provincia`} placeholder="Ej: Buenos Aires" />
         </div>
       </div>
-
 
       <FormInput label="Email" name={`${prefix}email`} type="email" placeholder="email@ejemplo.com" />
     </div>
