@@ -48,7 +48,7 @@ export default function Home() {
       ...tramite.data,
       id: tramite.id
     });
-    setTramiteType(tramite.data.vehiculo?.tipo?.toLowerCase().includes('moto') ? 'moto' : 'auto');
+    setTramiteType(tramite.data.tipo_tramite || (tramite.data.vehiculo?.tipo?.toLowerCase().includes('moto') ? 'moto' : 'auto'));
     setView('edit');
   };
 

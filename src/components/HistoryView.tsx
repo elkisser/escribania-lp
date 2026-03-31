@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { motion } from 'framer-motion';
 import { FileText, Calendar, User, Car, ArrowRight, Loader2, Trash2, Download, Bike, Edit3 } from 'lucide-react';
+import { toast } from 'sonner';
 import { generate08 } from '@/lib/pdf/generator';
 
 interface Tramite {
@@ -41,7 +42,7 @@ export default function HistoryView({ onEdit }: HistoryViewProps) {
   };
 
   const deleteTramite = async (id: string) => {
-    if (!confirm('¿Estás seguro de que deseas eliminar este trámite?')) return;
+    if (!window.confirm('¿Estás seguro de que deseas eliminar este trámite?')) return;
     
     const { error } = await supabase
       .from('tramites_08')
@@ -49,8 +50,9 @@ export default function HistoryView({ onEdit }: HistoryViewProps) {
       .eq('id', id);
 
     if (error) {
-      alert('Error al eliminar: ' + error.message);
+      toast.error('Error al eliminar: ' + error.message);
     } else {
+      toast.success('Trámite eliminado');
       setTramites(tramites.filter(t => t.id !== id));
     }
   };
@@ -62,8 +64,9 @@ export default function HistoryView({ onEdit }: HistoryViewProps) {
       const blob = new Blob([new Uint8Array(pdfBytes)], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
+      toast.success('PDF generado correctamente');
     } catch (error: any) {
-      alert('Error generando PDF: ' + error.message);
+      toast.error('Error generando PDF: ' + error.message);
     }
   };
 
@@ -96,7 +99,8 @@ export default function HistoryView({ onEdit }: HistoryViewProps) {
       ) : (
         <div className="grid grid-cols-1 gap-6">
           {tramites.map((tramite) => {
-            const isMoto = tramite.data.vehiculo?.tipo?.toLowerCase().includes('moto');
+            const isMoto = tramite.data.tipo_tramite === 'moto' || 
+                          tramite.data.vehiculo?.tipo?.toLowerCase().includes('moto');
             return (
               <motion.div
                 key={tramite.id}

@@ -77,6 +77,9 @@ export const PersonaOpcionalSchema = z.object({
   domicilio_provincia: z.string().optional().or(z.literal('')),
   lugar_nacimiento: z.string().optional().or(z.literal('')),
 
+  autoridad_o_pais_expidio: z.string().optional().or(z.literal('')),
+  pais: z.string().optional().or(z.literal('')),
+  sexo: z.string().optional().or(z.literal('')),
   nombre_conyugue: z.string().optional().or(z.literal('')),
   dni_conyugue: z.string().optional().or(z.literal('')),
   autoridad_o_pais_expidio_conyugue: z.string().optional().or(z.literal('')),

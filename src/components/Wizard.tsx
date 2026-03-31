@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ChevronLeft, Save, FileText, CheckCircle, User, Users, Car, CreditCard } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Save, FileText, CheckCircle, User, Users, Car, CreditCard, Loader2 } from 'lucide-react';
 import { useForm, FormProvider } from 'react-hook-form';
+import { toast } from 'sonner';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { TramiteSchema, TramiteData } from '@/lib/schemas';
 import { generate08 } from '@/lib/pdf/generator';
@@ -51,25 +52,29 @@ export default function Wizard({ type, initialData, onSuccess }: WizardProps) {
         nombre: '', dni: '', cuit: '', fecha_nacimiento: '', domicilio: '', email: '', telefono: '',
         domicilio_legal: '', domicilio_legal_numero: '', domicilio_legal_piso: '', domicilio_legal_depto: '', domicilio_legal_cp: '', domicilio_legal_localidad: '',
         domicilio_real: '', domicilio_real_numero: '', domicilio_real_piso: '', domicilio_real_depto: '', domicilio_real_cp: '', domicilio_real_localidad: '',
-        domicilio_departamento_o_partido: '', domicilio_provincia: '', lugar_nacimiento: '', nombre_conyugue: ''
+        domicilio_departamento_o_partido: '', domicilio_provincia: '', lugar_nacimiento: '', nombre_conyugue: '',
+        pais: 'Argentina', sexo: '', porcentaje_entero: '100', porcentaje_decimal: '00'
       },
       vendedor_condominio: {
         nombre: '', dni: '', cuit: '', fecha_nacimiento: '', domicilio: '', email: '', telefono: '',
         domicilio_legal: '', domicilio_legal_numero: '', domicilio_legal_piso: '', domicilio_legal_depto: '', domicilio_legal_cp: '', domicilio_legal_localidad: '',
         domicilio_real: '', domicilio_real_numero: '', domicilio_real_piso: '', domicilio_real_depto: '', domicilio_real_cp: '', domicilio_real_localidad: '',
-        domicilio_departamento_o_partido: '', domicilio_provincia: '', lugar_nacimiento: '', nombre_conyugue: ''
+        domicilio_departamento_o_partido: '', domicilio_provincia: '', lugar_nacimiento: '', nombre_conyugue: '',
+        pais: 'Argentina', sexo: '', porcentaje_entero: '0', porcentaje_decimal: '00'
       },
       comprador: {
         nombre: '', dni: '', cuit: '', fecha_nacimiento: '', domicilio: '', email: '', telefono: '',
         domicilio_legal: '', domicilio_legal_numero: '', domicilio_legal_piso: '', domicilio_legal_depto: '', domicilio_legal_cp: '', domicilio_legal_localidad: '',
         domicilio_real: '', domicilio_real_numero: '', domicilio_real_piso: '', domicilio_real_depto: '', domicilio_real_cp: '', domicilio_real_localidad: '',
-        domicilio_departamento_o_partido: '', domicilio_provincia: '', lugar_nacimiento: '', nombre_conyugue: ''
+        domicilio_departamento_o_partido: '', domicilio_provincia: '', lugar_nacimiento: '', nombre_conyugue: '',
+        pais: 'Argentina', sexo: '', porcentaje_entero: '100', porcentaje_decimal: '00'
       },
       comprador_condominio: {
         nombre: '', dni: '', cuit: '', fecha_nacimiento: '', domicilio: '', email: '', telefono: '',
         domicilio_legal: '', domicilio_legal_numero: '', domicilio_legal_piso: '', domicilio_legal_depto: '', domicilio_legal_cp: '', domicilio_legal_localidad: '',
         domicilio_real: '', domicilio_real_numero: '', domicilio_real_piso: '', domicilio_real_depto: '', domicilio_real_cp: '', domicilio_real_localidad: '',
-        domicilio_departamento_o_partido: '', domicilio_provincia: '', lugar_nacimiento: '', nombre_conyugue: ''
+        domicilio_departamento_o_partido: '', domicilio_provincia: '', lugar_nacimiento: '', nombre_conyugue: '',
+        pais: 'Argentina', sexo: '', porcentaje_entero: '0', porcentaje_decimal: '00'
       },
       fecha: new Date().toISOString().split('T')[0],
       lugar: '',
@@ -118,7 +123,8 @@ export default function Wizard({ type, initialData, onSuccess }: WizardProps) {
 
   const onSaveDraft = async () => {
     setIsSaving(true);
-    const data = methods.getValues();
+    const formData = methods.getValues();
+    const data = { ...formData, tipo_tramite: type };
     try {
       let result;
       if (initialData && (initialData as any).id) {
@@ -143,10 +149,10 @@ export default function Wizard({ type, initialData, onSuccess }: WizardProps) {
 
       if (result.error) throw result.error;
 
-      alert('Borrador guardado correctamente.');
+      toast.success('Borrador guardado correctamente.');
       if (onSuccess) onSuccess();
     } catch (error: any) {
-      alert('Error guardando borrador: ' + error.message);
+      toast.error('Error guardando borrador: ' + error.message);
     } finally {
       setIsSaving(false);
     }
@@ -155,7 +161,7 @@ export default function Wizard({ type, initialData, onSuccess }: WizardProps) {
   const onGeneratePDF = async () => {
     const isValid = await methods.trigger();
     if (!isValid) {
-      alert('Por favor, completa todos los campos requeridos correctamente.');
+      toast.error('Por favor, completa todos los campos requeridos correctamente.');
       return;
     }
 
@@ -169,8 +175,9 @@ export default function Wizard({ type, initialData, onSuccess }: WizardProps) {
       const url = URL.createObjectURL(blob);
 
       window.open(url, '_blank');
+      toast.success('PDF generado correctamente.');
     } catch (error: any) {
-      alert('Error generando PDF: ' + error.message);
+      toast.error('Error generando PDF: ' + error.message);
     } finally {
       setIsGenerating(false);
     }
@@ -187,7 +194,7 @@ export default function Wizard({ type, initialData, onSuccess }: WizardProps) {
             animate={{ width: `${(currentStep / (steps.length - 1)) * 100}%` }}
           />
           {steps.map((step, idx) => (
-            <div key={step.id} className="flex flex-col items-center group cursor-pointer flex-1" onClick={() => idx < currentStep && setCurrentStep(idx)}>
+            <div key={step.id} className="flex flex-col items-center group cursor-pointer flex-1" onClick={() => setCurrentStep(idx)}>
               <div 
                 className={`w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl flex items-center justify-center transition-all duration-300 border-2 ${
                   idx < currentStep ? 'bg-brand-mint text-white border-brand-mint shadow-lg' : 
@@ -211,8 +218,15 @@ export default function Wizard({ type, initialData, onSuccess }: WizardProps) {
 
 
       <FormProvider {...methods}>
-
-        <div className="bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] p-6 md:p-14 border border-gray-50 min-h-[400px] md:min-h-[500px] relative overflow-hidden">
+        <form 
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && e.target instanceof HTMLInputElement) {
+              e.preventDefault();
+              next();
+            }
+          }}
+          className="bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] p-6 md:p-14 border border-gray-50 min-h-[400px] md:min-h-[500px] relative overflow-hidden"
+        >
           <div className="absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-brand-mint/10 rounded-bl-full -z-0 opacity-40 translate-x-6 -translate-y-6 md:translate-x-8 md:translate-y-8" />
 
           <AnimatePresence mode="wait">
@@ -285,7 +299,7 @@ export default function Wizard({ type, initialData, onSuccess }: WizardProps) {
               </div>
             </motion.div>
           </AnimatePresence>
-        </div>
+        </form>
       </FormProvider>
 
       {/* Mobile Navigation - Fixed Bottom */}
@@ -332,7 +346,3 @@ export default function Wizard({ type, initialData, onSuccess }: WizardProps) {
     </div>
   );
 }
-
-const Loader2 = ({ className }: { className?: string }) => (
-  <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/><path d="m16.2 16.2 2.9 2.9"/><path d="M12 18v4"/><path d="m4.9 19.1 2.9-2.9"/><path d="M2 12h4"/><path d="m4.9 4.9 2.9 2.9"/></svg>
-);
