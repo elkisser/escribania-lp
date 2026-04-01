@@ -1,14 +1,16 @@
 import { z } from 'zod';
 
 export const PersonaSchema = z.object({
-  nombre: z.string().min(2, 'El nombre/apellido completo es requerido'),
-  pais: z.string().min(1, 'El país es requerido'),
-  sexo: z.string().min(1, 'El sexo es requerido'),
-  dni: z.string().min(7, 'DNI inválido'),
+  tipo_persona: z.enum(['fisica', 'juridica']).default('fisica'),
+  nombre: z.string().min(2, 'Requerido'),
+  pais: z.string().optional().or(z.literal('')),
+  sexo: z.string().optional().or(z.literal('')),
+  dni: z.string().optional().or(z.literal('')),
   cuit: z.string().optional().or(z.literal('')),
   domicilio: z.string().optional().or(z.literal('')),
   email: z.string().email('Email inválido').optional().or(z.literal('')),
   telefono: z.string().optional().or(z.literal('')),
+
   // Campos detallados para el Formulario 08 - Legales
   domicilio_legal: z.string().optional().or(z.literal('')),
   domicilio_legal_numero: z.string().optional().or(z.literal('')),
@@ -16,6 +18,7 @@ export const PersonaSchema = z.object({
   domicilio_legal_depto: z.string().optional().or(z.literal('')),
   domicilio_legal_cp: z.string().optional().or(z.literal('')),
   domicilio_legal_localidad: z.string().optional().or(z.literal('')),
+
   // Campos detallados para el Formulario 08 - Reales
   domicilio_real: z.string().optional().or(z.literal('')),
   domicilio_real_numero: z.string().optional().or(z.literal('')),
@@ -23,6 +26,7 @@ export const PersonaSchema = z.object({
   domicilio_real_depto: z.string().optional().or(z.literal('')),
   domicilio_real_cp: z.string().optional().or(z.literal('')),
   domicilio_real_localidad: z.string().optional().or(z.literal('')),
+
   // Otros
   autoridad_o_pais_expidio: z.string().optional().or(z.literal('')),
   domicilio_departamento_o_partido: z.string().optional().or(z.literal('')),
@@ -30,11 +34,12 @@ export const PersonaSchema = z.object({
   lugar_nacimiento: z.string().optional().or(z.literal('')),
   fecha_nacimiento: z.string().optional().or(z.literal('')),
   nombre_conyugue: z.string().optional().or(z.literal('')),
-  dni_conyugue: z.string().optional().or(z.literal('')),
-  autoridad_o_pais_expidio_conyugue: z.string().optional().or(z.literal('')),
-
-  porcentaje_entero: z.string().regex(/^\d+$/, 'Debe ser un número').refine((val) => Number(val) <= 100, 'Máximo 100'),
-  porcentaje_decimal: z.string().regex(/^\d{1,2}$/, 'Máximo 2 dígitos').refine((val) => Number(val) <= 99, 'Máximo 99').optional().or(z.literal('00')),
+  personeria: z.string().optional().or(z.literal('')), 
+  n_datos_inscripcion: z.string().optional().or(z.literal('')),
+  fecha_inscripcion: z.string().optional().or(z.literal('')),
+  
+  porcentaje_entero: z.string().optional().or(z.literal('')).refine((val) => !val || /^\d+$/.test(val), 'Debe ser un número').refine((val) => !val || Number(val) <= 100, 'Máximo 100'),
+  porcentaje_decimal: z.string().optional().or(z.literal('')).refine((val) => !val || /^\d{1,2}$/.test(val), 'Máximo 2 dígitos').refine((val) => !val || Number(val) <= 99, 'Máximo 99'),
 });
 
 
@@ -54,6 +59,7 @@ export const VehiculoSchema = z.object({
 
 
 export const PersonaOpcionalSchema = z.object({
+  tipo_persona: z.enum(['fisica', 'juridica']).optional(),
   nombre: z.string().optional().or(z.literal('')),
   dni: z.string().optional().or(z.literal('')),
   cuit: z.string().optional().or(z.literal('')),
@@ -81,11 +87,12 @@ export const PersonaOpcionalSchema = z.object({
   pais: z.string().optional().or(z.literal('')),
   sexo: z.string().optional().or(z.literal('')),
   nombre_conyugue: z.string().optional().or(z.literal('')),
-  dni_conyugue: z.string().optional().or(z.literal('')),
-  autoridad_o_pais_expidio_conyugue: z.string().optional().or(z.literal('')),
-
-  porcentaje_entero: z.string().optional().or(z.literal('')),
-  porcentaje_decimal: z.string().optional().or(z.literal('')),
+  personeria: z.string().optional().or(z.literal('')),
+  n_datos_inscripcion: z.string().optional().or(z.literal('')),
+  fecha_inscripcion: z.string().optional().or(z.literal('')),
+  
+  porcentaje_entero: z.string().optional().or(z.literal('')).refine((val) => !val || /^\d+$/.test(val), 'Debe ser un número').refine((val) => !val || Number(val) <= 100, 'Máximo 100'),
+  porcentaje_decimal: z.string().optional().or(z.literal('')).refine((val) => !val || /^\d{1,2}$/.test(val), 'Máximo 2 dígitos').refine((val) => !val || Number(val) <= 99, 'Máximo 99'),
 });
 
 export const TramiteSchema = z.object({

@@ -98,6 +98,18 @@ const BASE_MOTO_MAPPING: PDFMapItem[] = [
   { field: 'comprador.nombre_conyugue', page: 0, x: 150, y: 279 },
   { field: 'comprador_condominio.nombre_conyugue', page: 0, x: 370, y: 280 },
 
+  { field: 'comprador.personeria', page: 0, x: 150, y: 261 },
+  { field: 'comprador.n_datos_inscripcion', page: 0, x: 150, y: 230 },
+  { field: 'comprador.fecha_inscripcion_day', page: 0, x: 258, y: 231 },
+  { field: 'comprador.fecha_inscripcion_month', page: 0, x: 283, y: 231 },
+  { field: 'comprador.fecha_inscripcion_year', page: 0, x: 304, y: 231 },
+
+  { field: 'comprador_condominio.personeria', page: 0, x: 370, y: 261 },
+  { field: 'comprador_condominio.n_datos_inscripcion', page: 0, x: 370, y: 232 },
+  { field: 'comprador_condominio.fecha_inscripcion_day', page: 0, x: 478, y: 233 },
+  { field: 'comprador_condominio.fecha_inscripcion_month', page: 0, x: 502, y: 233 },
+  { field: 'comprador_condominio.fecha_inscripcion_year', page: 0, x: 525, y: 233 },
+
   // SECCIÓN F: VEHÍCULO
   { field: 'vehiculo.dominio', page: 0, x: 260, y: 121 },
   { field: 'vehiculo.marca', page: 0, x: 170, y: 108 },
@@ -115,11 +127,11 @@ const BASE_MOTO_MAPPING: PDFMapItem[] = [
   { field: 'vendedor.porcentaje_entero', page: 1, x: 25, y: 770 },
   { field: 'vendedor.porcentaje_decimal', page: 1, x: 50, y: 770 },
 
-  { field: 'vendedor.nombre', page: 1, x: 90, y: 755 },
+  { field: 'vendedor.nombre', page: 1, x: 67, y: 754 },
   { field: 'vendedor.dni', page: 1, x: 50, y: 627 },
   { field: 'vendedor.autoridad_o_pais_expidio', page: 1, x: 138, y: 627 },
 
-  { field: 'vendedor.nombre_conyugue', page: 1, x: 88, y: 557 },
+  { field: 'vendedor.nombre_conyugue', page: 1, x: 69, y: 557 },
   { field: 'vendedor.dni_conyugue', page: 1, x: 50, y: 457 },
   { field: 'vendedor.autoridad_o_pais_expidio_conyugue', page: 1, x: 140, y: 458 },
 

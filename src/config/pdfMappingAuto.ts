@@ -105,6 +105,18 @@ const BASE_AUTO_MAPPING: PDFMapItem[] = [
   { field: 'comprador.nombre_conyugue', page: 0, x: 150, y: 284 },
   { field: 'comprador_condominio.nombre_conyugue', page: 0, x: 370, y: 285 },
 
+  { field: 'comprador.personeria', page: 0, x: 150, y: 264 },
+  { field: 'comprador.n_datos_inscripcion', page: 0, x: 150, y: 237 },
+  { field: 'comprador.fecha_inscripcion_day', page: 0, x: 258, y: 238 },
+  { field: 'comprador.fecha_inscripcion_month', page: 0, x: 283, y: 238 },
+  { field: 'comprador.fecha_inscripcion_year', page: 0, x: 304, y: 238 },
+
+  { field: 'comprador_condominio.personeria', page: 0, x: 370, y: 266 },
+  { field: 'comprador_condominio.n_datos_inscripcion', page: 0, x: 370, y: 239 },
+  { field: 'comprador_condominio.fecha_inscripcion_day', page: 0, x: 478, y: 240 },
+  { field: 'comprador_condominio.fecha_inscripcion_month', page: 0, x: 502, y: 240 },
+  { field: 'comprador_condominio.fecha_inscripcion_year', page: 0, x: 524, y: 240 },
+
   // SECCIÓN F: VEHÍCULO
   { field: 'vehiculo.dominio', page: 0, x: 260, y: 123 },
   { field: 'vehiculo.marca', page: 0, x: 170, y: 110 },

@@ -1,6 +1,6 @@
 {
-  "name": "escribe",
-  "version": "0.1.0",
+  "name": "escribania-rm",
+  "version": "0.5.1",
   "private": true,
   "scripts": {
     "dev": "next dev",

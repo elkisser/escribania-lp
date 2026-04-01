@@ -49,32 +49,36 @@ export default function Wizard({ type, initialData, onSuccess }: WizardProps) {
         n_chasis: ''
       },
       vendedor: {
+        tipo_persona: 'fisica',
         nombre: '', dni: '', cuit: '', fecha_nacimiento: '', domicilio: '', email: '', telefono: '',
         domicilio_legal: '', domicilio_legal_numero: '', domicilio_legal_piso: '', domicilio_legal_depto: '', domicilio_legal_cp: '', domicilio_legal_localidad: '',
         domicilio_real: '', domicilio_real_numero: '', domicilio_real_piso: '', domicilio_real_depto: '', domicilio_real_cp: '', domicilio_real_localidad: '',
         domicilio_departamento_o_partido: '', domicilio_provincia: '', lugar_nacimiento: '', nombre_conyugue: '',
-        pais: 'Argentina', sexo: '', porcentaje_entero: '100', porcentaje_decimal: '00'
+        pais: 'Argentina', sexo: '', porcentaje_entero: '', porcentaje_decimal: ''
       },
       vendedor_condominio: {
+        tipo_persona: 'fisica',
         nombre: '', dni: '', cuit: '', fecha_nacimiento: '', domicilio: '', email: '', telefono: '',
         domicilio_legal: '', domicilio_legal_numero: '', domicilio_legal_piso: '', domicilio_legal_depto: '', domicilio_legal_cp: '', domicilio_legal_localidad: '',
         domicilio_real: '', domicilio_real_numero: '', domicilio_real_piso: '', domicilio_real_depto: '', domicilio_real_cp: '', domicilio_real_localidad: '',
         domicilio_departamento_o_partido: '', domicilio_provincia: '', lugar_nacimiento: '', nombre_conyugue: '',
-        pais: 'Argentina', sexo: '', porcentaje_entero: '0', porcentaje_decimal: '00'
+        pais: 'Argentina', sexo: '', porcentaje_entero: '', porcentaje_decimal: ''
       },
       comprador: {
+        tipo_persona: 'fisica',
         nombre: '', dni: '', cuit: '', fecha_nacimiento: '', domicilio: '', email: '', telefono: '',
         domicilio_legal: '', domicilio_legal_numero: '', domicilio_legal_piso: '', domicilio_legal_depto: '', domicilio_legal_cp: '', domicilio_legal_localidad: '',
         domicilio_real: '', domicilio_real_numero: '', domicilio_real_piso: '', domicilio_real_depto: '', domicilio_real_cp: '', domicilio_real_localidad: '',
         domicilio_departamento_o_partido: '', domicilio_provincia: '', lugar_nacimiento: '', nombre_conyugue: '',
-        pais: 'Argentina', sexo: '', porcentaje_entero: '100', porcentaje_decimal: '00'
+        pais: 'Argentina', sexo: '', porcentaje_entero: '', porcentaje_decimal: ''
       },
       comprador_condominio: {
+        tipo_persona: 'fisica',
         nombre: '', dni: '', cuit: '', fecha_nacimiento: '', domicilio: '', email: '', telefono: '',
         domicilio_legal: '', domicilio_legal_numero: '', domicilio_legal_piso: '', domicilio_legal_depto: '', domicilio_legal_cp: '', domicilio_legal_localidad: '',
         domicilio_real: '', domicilio_real_numero: '', domicilio_real_piso: '', domicilio_real_depto: '', domicilio_real_cp: '', domicilio_real_localidad: '',
         domicilio_departamento_o_partido: '', domicilio_provincia: '', lugar_nacimiento: '', nombre_conyugue: '',
-        pais: 'Argentina', sexo: '', porcentaje_entero: '0', porcentaje_decimal: '00'
+        pais: 'Argentina', sexo: '', porcentaje_entero: '', porcentaje_decimal: ''
       },
       fecha: new Date().toISOString().split('T')[0],
       lugar: '',
