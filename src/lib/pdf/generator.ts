@@ -15,6 +15,8 @@ export async function generate08(data: any, type: 'auto' | 'moto') {
     console.warn('No se pudo cargar la plantilla oficial, usando un documento en blanco para previsualizar.');
     // Fallback social solo para previsualización si no existen los archivos
     const pdfDoc = await PDFDocument.create();
+    // Añadimos 2 páginas por defecto en el fallback (Frente y Dorso)
+    pdfDoc.addPage([595.28, 841.89]);
     pdfDoc.addPage([595.28, 841.89]);
     existingPdfBytes = await pdfDoc.save();
   }
