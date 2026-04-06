@@ -140,7 +140,12 @@ export function StepPerson({ type }: { type: 'vendedor' | 'comprador' | 'vendedo
             <FormInput label="Teléfono" name={`${prefix}telefono`} placeholder="Ej: (11) 1234-5678" />
           </div>
 
-          <FormInput label="Nombre Cónyuge" name={`${prefix}nombre_conyugue`} placeholder="Si corresponde" />
+          <div className={`grid grid-cols-1 ${type.includes('comprador') ? 'md:grid-cols-2' : ''} gap-6 md:gap-10`}>
+            {type.includes('comprador') && (
+              <FormInput label="Profesión" name={`${prefix}profesion`} placeholder="Ej: Escribano, Comerciante, etc." />
+            )}
+            <FormInput label="Nombre Cónyuge" name={`${prefix}nombre_conyugue`} placeholder="Si corresponde" />
+          </div>
         </>
       )}
 

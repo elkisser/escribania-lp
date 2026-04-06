@@ -37,6 +37,7 @@ export const PersonaSchema = z.object({
   personeria: z.string().optional().or(z.literal('')), 
   n_datos_inscripcion: z.string().optional().or(z.literal('')),
   fecha_inscripcion: z.string().optional().or(z.literal('')),
+  profesion: z.string().optional().or(z.literal('')),
   
   porcentaje_entero: z.string().optional().or(z.literal('')).refine((val) => !val || /^\d+$/.test(val), 'Debe ser un número').refine((val) => !val || Number(val) <= 100, 'Máximo 100'),
   porcentaje_decimal: z.string().optional().or(z.literal('')).refine((val) => !val || /^\d{1,2}$/.test(val), 'Máximo 2 dígitos').refine((val) => !val || Number(val) <= 99, 'Máximo 99'),
@@ -90,6 +91,7 @@ export const PersonaOpcionalSchema = z.object({
   personeria: z.string().optional().or(z.literal('')),
   n_datos_inscripcion: z.string().optional().or(z.literal('')),
   fecha_inscripcion: z.string().optional().or(z.literal('')),
+  profesion: z.string().optional().or(z.literal('')),
   
   porcentaje_entero: z.string().optional().or(z.literal('')).refine((val) => !val || /^\d+$/.test(val), 'Debe ser un número').refine((val) => !val || Number(val) <= 100, 'Máximo 100'),
   porcentaje_decimal: z.string().optional().or(z.literal('')).refine((val) => !val || /^\d{1,2}$/.test(val), 'Máximo 2 dígitos').refine((val) => !val || Number(val) <= 99, 'Máximo 99'),

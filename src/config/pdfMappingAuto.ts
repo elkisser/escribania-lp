@@ -102,6 +102,9 @@ const BASE_AUTO_MAPPING: PDFMapItem[] = [
   { field: 'comprador_condominio.fecha_nacimiento_month', page: 0, x: 369, y: 310, size: 8 },
   { field: 'comprador_condominio.fecha_nacimiento_year', page: 0, x: 389, y: 310, size: 8 },
 
+  { field: 'comprador.profesion', page: 0, x: 220, y: 429 },
+  { field: 'comprador_condominio.profesion', page: 0, x: 440, y: 431 },
+
   { field: 'comprador.nombre_conyugue', page: 0, x: 150, y: 284 },
   { field: 'comprador_condominio.nombre_conyugue', page: 0, x: 370, y: 285 },
 
