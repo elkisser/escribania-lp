@@ -18,8 +18,8 @@ const BASE_MOTO_MAPPING: PDFMapItem[] = [
 
   // SECCIÓN D: COMPRADOR
   // SECCIÓN D: COMPRADOR
-  { field: 'comprador.porcentaje_entero', page: 0, x: 127, y: 651 },
-  { field: 'comprador.porcentaje_decimal', page: 0, x: 155, y: 651 },
+  { field: 'comprador.porcentaje_entero', page: 0, x: 139, y: 651 },
+  { field: 'comprador.porcentaje_decimal', page: 0, x: 167, y: 651 },
   { field: 'comprador.nombre', page: 0, x: 150, y: 636 },
 
   { field: 'comprador_condominio.porcentaje_entero', page: 0, x: 349, y: 644 },
@@ -50,7 +50,7 @@ const BASE_MOTO_MAPPING: PDFMapItem[] = [
   { field: 'comprador.domicilio_legal_localidad', page: 0, x: 160, y: 535 },
   { field: 'comprador_condominio.domicilio_legal_localidad', page: 0, x: 390, y: 536 },
 
-  { field: 'comprador.domicilio_departamento_o_partido', page: 0, x: 130, y: 520 },
+  { field: 'comprador.domicilio_departamento_o_partido', page: 0, x: 141, y: 520 },
   { field: 'comprador_condominio.domicilio_departamento_o_partido', page: 0, x: 347, y: 521 },
   { field: 'comprador.domicilio_provincia', page: 0, x: 257, y: 520 },
   { field: 'comprador_condominio.domicilio_provincia', page: 0, x: 477, y: 521 },
@@ -70,12 +70,12 @@ const BASE_MOTO_MAPPING: PDFMapItem[] = [
   { field: 'comprador.domicilio_real_localidad', page: 0, x: 160, y: 462 },
   { field: 'comprador_condominio.domicilio_real_localidad', page: 0, x: 390, y: 463 },
 
-  { field: 'comprador.domicilio_departamento_o_partido', page: 0, x: 130, y: 444 },
+  { field: 'comprador.domicilio_departamento_o_partido', page: 0, x: 141, y: 444 },
   { field: 'comprador_condominio.domicilio_departamento_o_partido', page: 0, x: 347, y: 445 },
   { field: 'comprador.domicilio_provincia', page: 0, x: 257, y: 444 },
   { field: 'comprador_condominio.domicilio_provincia', page: 0, x: 477, y: 445 },
 
-  { field: 'comprador.dni', page: 0, x: 130, y: 376 },
+  { field: 'comprador.dni', page: 0, x: 141, y: 376 },
   { field: 'comprador_condominio.dni', page: 0, x: 350, y: 377 },
 
   { field: 'comprador.autoridad_o_pais_expidio', page: 0, x: 220, y: 377 },
@@ -87,9 +87,9 @@ const BASE_MOTO_MAPPING: PDFMapItem[] = [
   { field: 'comprador.lugar_nacimiento', page: 0, x: 202, y: 337 },
   { field: 'comprador_condominio.lugar_nacimiento', page: 0, x: 422, y: 338 },
 
-  { field: 'comprador.fecha_nacimiento_day', page: 0, x: 126, y: 309, size: 8 },
-  { field: 'comprador.fecha_nacimiento_month', page: 0, x: 149, y: 309, size: 8 },
-  { field: 'comprador.fecha_nacimiento_year', page: 0, x: 166, y: 309, size: 8 },
+  { field: 'comprador.fecha_nacimiento_day', page: 0, x: 139, y: 309, size: 8 },
+  { field: 'comprador.fecha_nacimiento_month', page: 0, x: 162, y: 309, size: 8 },
+  { field: 'comprador.fecha_nacimiento_year', page: 0, x: 179, y: 309, size: 8 },
 
   { field: 'comprador_condominio.fecha_nacimiento_day', page: 0, x: 346, y: 304, size: 8 },
   { field: 'comprador_condominio.fecha_nacimiento_month', page: 0, x: 369, y: 304, size: 8 },

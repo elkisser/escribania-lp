@@ -26,8 +26,8 @@ const BASE_AUTO_MAPPING: PDFMapItem[] = [
   { field: 'vehiculo.dominio', page: 0, x: 291, y: 706 },
 
   // SECCIÓN D: COMPRADOR
-  { field: 'comprador.porcentaje_entero', page: 0, x: 127, y: 653 },
-  { field: 'comprador.porcentaje_decimal', page: 0, x: 155, y: 653 },
+  { field: 'comprador.porcentaje_entero', page: 0, x: 139, y: 653 },
+  { field: 'comprador.porcentaje_decimal', page: 0, x: 167, y: 653 },
   { field: 'comprador.nombre', page: 0, x: 150, y: 639 },
   { field: 'comprador._pais_sexo', page: 0, x: 140, y: 620 },
 
@@ -57,7 +57,7 @@ const BASE_AUTO_MAPPING: PDFMapItem[] = [
   { field: 'comprador.domicilio_legal_localidad', page: 0, x: 180, y: 539 },
   { field: 'comprador_condominio.domicilio_legal_localidad', page: 0, x: 410, y: 540 },
 
-  { field: 'comprador.domicilio_departamento_o_partido', page: 0, x: 127, y: 524 },
+  { field: 'comprador.domicilio_departamento_o_partido', page: 0, x: 141, y: 524 },
   { field: 'comprador_condominio.domicilio_departamento_o_partido', page: 0, x: 347, y: 525 },
   { field: 'comprador.domicilio_provincia', page: 0, x: 265, y: 524 },
   { field: 'comprador_condominio.domicilio_provincia', page: 0, x: 485, y: 525 },
@@ -77,12 +77,12 @@ const BASE_AUTO_MAPPING: PDFMapItem[] = [
   { field: 'comprador.domicilio_real_localidad', page: 0, x: 160, y: 468 },
   { field: 'comprador_condominio.domicilio_real_localidad', page: 0, x: 390, y: 469 },
 
-  { field: 'comprador.domicilio_departamento_o_partido', page: 0, x: 127, y: 447 },
+  { field: 'comprador.domicilio_departamento_o_partido', page: 0, x: 141, y: 447 },
   { field: 'comprador_condominio.domicilio_departamento_o_partido', page: 0, x: 347, y: 449 },
   { field: 'comprador.domicilio_provincia', page: 0, x: 265, y: 447 },
   { field: 'comprador_condominio.domicilio_provincia', page: 0, x: 485, y: 449 },
 
-  { field: 'comprador.dni', page: 0, x: 130, y: 379 },
+  { field: 'comprador.dni', page: 0, x: 141, y: 379 },
   { field: 'comprador_condominio.dni', page: 0, x: 350, y: 381 },
 
   { field: 'comprador.autoridad_o_pais_expidio', page: 0, x: 220, y: 379 },
@@ -94,9 +94,9 @@ const BASE_AUTO_MAPPING: PDFMapItem[] = [
   { field: 'comprador.lugar_nacimiento', page: 0, x: 202, y: 340 },
   { field: 'comprador_condominio.lugar_nacimiento', page: 0, x: 422, y: 341 },
 
-  { field: 'comprador.fecha_nacimiento_day', page: 0, x: 126, y: 309, size: 8 },
-  { field: 'comprador.fecha_nacimiento_month', page: 0, x: 149, y: 309, size: 8 },
-  { field: 'comprador.fecha_nacimiento_year', page: 0, x: 166, y: 309, size: 8 },
+  { field: 'comprador.fecha_nacimiento_day', page: 0, x: 139, y: 309, size: 8 },
+  { field: 'comprador.fecha_nacimiento_month', page: 0, x: 162, y: 309, size: 8 },
+  { field: 'comprador.fecha_nacimiento_year', page: 0, x: 179, y: 309, size: 8 },
 
   { field: 'comprador_condominio.fecha_nacimiento_day', page: 0, x: 346, y: 310, size: 8 },
   { field: 'comprador_condominio.fecha_nacimiento_month', page: 0, x: 369, y: 310, size: 8 },
@@ -134,12 +134,12 @@ const BASE_AUTO_MAPPING: PDFMapItem[] = [
 
   // ----------- PÁGINA 2: DORSO ORIGINAL (1) -----------
   // SECCIÓN I: VENDEDOR
-  { field: 'vendedor.porcentaje_entero', page: 1, x: 32, y: 783 },
-  { field: 'vendedor.porcentaje_decimal', page: 1, x: 53, y: 783 },
+  { field: 'vendedor.porcentaje_entero', page: 1, x: 36, y: 780 },
+  { field: 'vendedor.porcentaje_decimal', page: 1, x: 57, y: 780 },
 
-  { field: 'vendedor.nombre', page: 1, x: 40, y: 765 },
-  { field: 'vendedor.dni', page: 1, x: 50, y: 629 },
-  { field: 'vendedor.autoridad_o_pais_expidio', page: 1, x: 138, y: 629 },
+  { field: 'vendedor.nombre', page: 1, x: 40, y: 762 },
+  { field: 'vendedor.dni', page: 1, x: 50, y: 627 },
+  { field: 'vendedor.autoridad_o_pais_expidio', page: 1, x: 138, y: 627 },
 
   { field: 'vendedor.nombre_conyugue', page: 1, x: 40, y: 559 },
   { field: 'vendedor.dni_conyugue', page: 1, x: 50, y: 458 },
@@ -154,8 +154,8 @@ const BASE_AUTO_MAPPING: PDFMapItem[] = [
   { field: 'vendedor_condominio.autoridad_o_pais_expidio', page: 1, x: 358, y: 629 },
 
   { field: 'vendedor_condominio.nombre_conyugue', page: 1, x: 260, y: 560 },
-  { field: 'vendedor_condominio.dni_conyugue', page: 1, x: 260, y: 459 },
-  { field: 'vendedor_condominio.autoridad_o_pais_expidio_conyugue', page: 1, x: 350, y: 459 },
+  { field: 'vendedor_condominio.dni_conyugue', page: 1, x: 260, y: 458 },
+  { field: 'vendedor_condominio.autoridad_o_pais_expidio_conyugue', page: 1, x: 350, y: 458 },
 
   // SECCION E: CONDOMINIO COMPRADOR (Frente)
   { field: 'comprador.nombre', page: 1, x: 40, y: 342 },

@@ -113,4 +113,7 @@ export const TramiteSchema = z.object({
 
 export type Persona = z.infer<typeof PersonaSchema>;
 export type Vehiculo = z.infer<typeof VehiculoSchema>;
-export type TramiteData = z.infer<typeof TramiteSchema>;
+export type TramiteData = z.infer<typeof TramiteSchema> & {
+  id?: string;
+  status?: string;
+};

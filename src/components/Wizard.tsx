@@ -129,34 +129,38 @@ export default function Wizard({ type, initialData, onSuccess }: WizardProps) {
     setIsSaving(true);
     const formData = methods.getValues();
     const data = { ...formData, tipo_tramite: type };
+    
+    // Si ya tiene un estado 'finalizado', lo mantenemos. De lo contrario, es 'borrador'.
+    const currentStatus = initialData?.status === 'finalizado' ? 'finalizado' : 'borrador';
+    
     try {
       let result;
-      if (initialData && (initialData as any).id) {
+      if (initialData && initialData.id) {
         // Update existing
         result = await supabase
           .from('tramites_08')
           .update({
             data: data,
-            status: 'borrador'
+            status: currentStatus
           })
-          .eq('id', (initialData as any).id);
+          .eq('id', initialData.id);
       } else {
         // Insert new
         result = await supabase
           .from('tramites_08')
           .insert([{
             data: data,
-            status: 'borrador'
+            status: currentStatus
           }])
           .select();
       }
 
       if (result.error) throw result.error;
 
-      toast.success('Borrador guardado correctamente.');
+      toast.success(currentStatus === 'finalizado' ? 'Trámite guardado correctamente.' : 'Borrador guardado correctamente.');
       if (onSuccess) onSuccess();
     } catch (error: any) {
-      toast.error('Error guardando borrador: ' + error.message);
+      toast.error('Error: ' + error.message);
     } finally {
       setIsSaving(false);
     }
@@ -170,18 +174,45 @@ export default function Wizard({ type, initialData, onSuccess }: WizardProps) {
     }
 
     setIsGenerating(true);
-    const data = methods.getValues();
+    const formData = methods.getValues();
+    const data = { ...formData, tipo_tramite: type };
+    
     try {
-      // Usamos el 'type' del componente (prop) para elegir el PDF base (auto/moto)
-      // Pero los datos del formulario (data) llevan lo que el usuario escribió
-      const pdfBytes = await generate08(data, type);
+      // Guardar en el historial con estado 'finalizado'
+      let result;
+      if (initialData && (initialData as any).id) {
+        // Update existing
+        result = await supabase
+          .from('tramites_08')
+          .update({
+            data: data,
+            status: 'finalizado'
+          })
+          .eq('id', (initialData as any).id);
+      } else {
+        // Insert new
+        result = await supabase
+          .from('tramites_08')
+          .insert([{
+            data: data,
+            status: 'finalizado'
+          }])
+          .select();
+      }
+
+      if (result.error) throw result.error;
+
+      // Generar el PDF
+      const pdfBytes = await generate08(formData, type);
       const blob = new Blob([new Uint8Array(pdfBytes)], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
 
       window.open(url, '_blank');
-      toast.success('PDF generado correctamente.');
+      toast.success('Formulario guardado en el historial y PDF generado.');
+      
+      if (onSuccess) onSuccess();
     } catch (error: any) {
-      toast.error('Error generando PDF: ' + error.message);
+      toast.error('Error: ' + error.message);
     } finally {
       setIsGenerating(false);
     }
@@ -276,7 +307,8 @@ export default function Wizard({ type, initialData, onSuccess }: WizardProps) {
                     disabled={isSaving}
                     className="flex-1 md:flex-none px-8 py-4 rounded-2xl font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all bg-white border border-gray-200 text-gray-400 hover:text-brand-black hover:border-brand-black hover:shadow-lg"
                   >
-                    {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Borrador
+                    {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} 
+                    {initialData?.status === 'finalizado' ? 'Guardar' : 'Borrador'}
                   </button>
                 </div>
 
@@ -324,7 +356,8 @@ export default function Wizard({ type, initialData, onSuccess }: WizardProps) {
             disabled={isSaving}
             className="h-12 rounded-xl font-bold uppercase tracking-widest text-[9px] flex items-center justify-center gap-1.5 transition-all bg-white border-2 border-brand-mint/30 text-slate-600 active:scale-95 shadow-sm px-1"
           >
-            {isSaving ? <Loader2 className="w-4 h-4 animate-spin text-brand-mint" /> : <Save className="w-4 h-4 text-brand-mint" />} Borrador
+            {isSaving ? <Loader2 className="w-4 h-4 animate-spin text-brand-mint" /> : <Save className="w-4 h-4 text-brand-mint" />} 
+            {initialData?.status === 'finalizado' ? 'Guardar' : 'Borrador'}
           </button>
 
           {currentStep === steps.length - 1 ? (

@@ -121,7 +121,7 @@ export default function HistoryView({ onEdit }: HistoryViewProps) {
                         <span className={`px-2 py-0.5 rounded-full text-[8px] md:text-[10px] font-black uppercase tracking-wider ${
                           tramite.status === 'borrador' ? 'bg-amber-50 text-amber-600 border border-amber-100' : 'bg-emerald-50 text-emerald-600 border border-emerald-100'
                         }`}>
-                          {tramite.status}
+                          {tramite.status === 'borrador' ? 'Borrador' : 'Finalizado'}
                         </span>
                       </div>
                       <div className="flex flex-col md:flex-row md:flex-wrap md:items-center gap-y-1 md:gap-y-2 md:gap-x-6 text-xs md:text-sm text-gray-400 font-medium">
@@ -149,7 +149,7 @@ export default function HistoryView({ onEdit }: HistoryViewProps) {
                       <button
                         onClick={() => onEdit(tramite)}
                         className="p-2.5 md:p-3 text-gray-400 hover:text-brand-mint hover:bg-brand-mint/5 rounded-xl transition-all"
-                        title="Editar borrador"
+                        title={tramite.status === 'borrador' ? 'Editar borrador' : 'Editar trámite'}
                       >
                         <Edit3 size={18} className="md:w-5 md:h-5" />
                       </button>

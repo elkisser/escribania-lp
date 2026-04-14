@@ -46,7 +46,8 @@ export default function Home() {
   const handleEdit = (tramite: any) => {
     setEditingTramite({
       ...tramite.data,
-      id: tramite.id
+      id: tramite.id,
+      status: tramite.status
     });
     setTramiteType(tramite.data.tipo_tramite || (tramite.data.vehiculo?.tipo?.toLowerCase().includes('moto') ? 'moto' : 'auto'));
     setView('edit');
@@ -157,7 +158,8 @@ export default function Home() {
                     </button>
                     <div>
                       <h1 className="text-3xl font-black text-gray-900 tracking-tight">
-                        Editando <span className="text-brand-mint">Borrador</span>
+                        {editingTramite?.status === 'borrador' ? 'Editando ' : 'Revisando '} 
+                        <span className="text-brand-mint">{editingTramite?.status === 'borrador' ? 'Borrador' : 'Trámite'}</span>
                       </h1>
                       <p className="text-gray-500 font-medium">Modifique los datos necesarios y guarde los cambios</p>
                     </div>
