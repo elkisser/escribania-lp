@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { useFormContext } from 'react-hook-form';
+import { FieldValues, useFormContext } from 'react-hook-form';
 import { MapPin, DollarSign, Calendar, Loader2 } from 'lucide-react';
 
 
@@ -44,8 +44,15 @@ const formatCurrency = (value: string) => {
 };
 
 export function FormInput({ label, name, icon, ...props }: FormInputProps) {
-  const { register, setValue, formState: { errors } } = useFormContext();
-  const error = (errors as any)[name.split('.')[0]]?.[name.split('.')[1]] || (errors as any)[name];
+  const { register, setValue, formState: { errors } } = useFormContext<FieldValues>();
+  const errorValue = name.split('.').reduce<unknown>((acc, key) => {
+    if (typeof acc === 'object' && acc !== null && key in acc) return (acc as Record<string, unknown>)[key];
+    return undefined;
+  }, errors as unknown);
+  const errorMessage =
+    typeof errorValue === 'object' && errorValue !== null && 'message' in errorValue
+      ? String((errorValue as { message: unknown }).message)
+      : '';
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Si hay un onChange personalizado en props, lo llamamos primero
@@ -70,13 +77,13 @@ export function FormInput({ label, name, icon, ...props }: FormInputProps) {
       <input
         {...register(name)}
         {...props}
-        aria-invalid={error ? "true" : "false"}
+        aria-invalid={errorMessage ? "true" : "false"}
         onChange={handleChange}
         className={`w-full px-4 py-2.5 rounded-xl border bg-white transition-all outline-none text-base text-slate-900 placeholder:text-slate-300 font-medium ${
-          error ? 'border-red-300 ring-4 ring-red-50 focus:ring-red-100' : 'border-slate-200 focus:border-brand-mint focus:ring-4 focus:ring-brand-mint/10'
+          errorMessage ? 'border-red-300 ring-4 ring-red-50 focus:ring-red-100' : 'border-slate-200 focus:border-brand-mint focus:ring-4 focus:ring-brand-mint/10'
         }`}
       />
-      {error && <p className="mt-1.5 text-[10px] font-bold text-red-500 ml-1 uppercase tracking-wider">{error.message}</p>}
+      {errorMessage && <p className="mt-1.5 text-[10px] font-bold text-red-500 ml-1 uppercase tracking-wider">{errorMessage}</p>}
     </div>
   );
 }
@@ -159,7 +166,7 @@ export function StepPerson({ type }: { type: 'vendedor' | 'comprador' | 'vendedo
             onChange={(e) => {
               let value = e.target.value.replace(/\D/g, ''); // solo números
               if (value.length > 3) value = value.slice(0, 3);
-              let num = Number(value);
+              const num = Number(value);
 
               if (num > 100) value = '100';
 

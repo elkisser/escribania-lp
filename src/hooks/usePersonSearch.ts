@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { UseFormReturn } from 'react-hook-form';
+import { FieldValues, UseFormReturn } from 'react-hook-form';
 
-export function usePersonSearch(methods: UseFormReturn<any>, prefix: string) {
+export function usePersonSearch(methods: UseFormReturn<FieldValues>, prefix: string) {
   const [isSearching, setIsSearching] = useState(false);
 
   const searchPerson = async () => {
@@ -41,9 +41,15 @@ export function usePersonSearch(methods: UseFormReturn<any>, prefix: string) {
         
         alert(`Datos de ${data.nombre} ${data.apellido} cargados correctamente.`);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : typeof err === 'object' && err !== null && 'message' in err
+            ? String((err as { message: unknown }).message)
+            : String(err);
       console.error('Search error:', err);
-      alert('Error en la búsqueda: ' + err.message);
+      alert('Error en la búsqueda: ' + message);
     } finally {
       setIsSearching(false);
     }

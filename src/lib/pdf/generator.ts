@@ -1,8 +1,9 @@
-import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import { PDFDocument, rgb, StandardFonts, PDFFont } from 'pdf-lib';
 import { AUTO_MAPPING } from '@/config/pdfMappingAuto';
 import { MOTO_MAPPING } from '@/config/pdfMappingMoto';
+import type { PDFMapItem } from '@/config/pdfMappingAuto';
 
-export async function generate08(data: any, type: 'auto' | 'moto') {
+export async function generate08(data: Record<string, unknown>, type: 'auto' | 'moto') {
   // 1. Cargar el PDF base desde la carpeta public
   const templateUrl = `/templates/08_${type}.pdf`;
   let existingPdfBytes;
@@ -11,7 +12,7 @@ export async function generate08(data: any, type: 'auto' | 'moto') {
     const response = await fetch(templateUrl);
     if (!response.ok) throw new Error(`Template not found at ${templateUrl}`);
     existingPdfBytes = await response.arrayBuffer();
-  } catch (error) {
+  } catch {
     console.warn('No se pudo cargar la plantilla oficial, usando un documento en blanco para previsualizar.');
     // Fallback social solo para previsualización si no existen los archivos
     const pdfDoc = await PDFDocument.create();
@@ -31,7 +32,7 @@ export async function generate08(data: any, type: 'auto' | 'moto') {
 
   const mappings = type === 'auto' ? AUTO_MAPPING : MOTO_MAPPING;
 
-  function splitTextIntoLines(text: string, font: any, fontSize: number, maxWidth: number): string[] {
+  function splitTextIntoLines(text: string, font: PDFFont, fontSize: number, maxWidth: number): string[] {
     const lines: string[] = [];
     const paragraphs = text.split(/\r?\n/);
 
@@ -112,14 +113,22 @@ export async function generate08(data: any, type: 'auto' | 'moto') {
     return lines;
   }
 
-  function getValue(path: string, obj: any) {
+  function getPathValue(path: string, obj: Record<string, unknown>): unknown {
+    return path.split('.').reduce<unknown>((acc, part) => {
+      if (typeof acc === 'object' && acc !== null && part in acc) return (acc as Record<string, unknown>)[part];
+      return undefined;
+    }, obj as unknown);
+  }
+
+  function getValue(path: string, obj: Record<string, unknown>): unknown {
     if (path.endsWith('_day') || path.endsWith('_month') || path.endsWith('_year')) {
       const parts = path.split('_');
       const suffix = parts.pop();
        const baseField = parts.join('_');
-      const fullDate = baseField.split('.').reduce((acc, part) => acc && acc[part], obj);
+      const fullDateValue = getPathValue(baseField, obj);
+      const fullDate = typeof fullDateValue === 'string' ? fullDateValue : '';
       
-      if (!fullDate || typeof fullDate !== 'string') return '';
+      if (!fullDate) return '';
       
       // Intentar parsear YYYY-MM-DD (estándar de input type="date")
       const dateParts = fullDate.split('-');
@@ -143,9 +152,10 @@ export async function generate08(data: any, type: 'auto' | 'moto') {
     // Nueva lógica para campos combinados (País - Sexo)
     if (path.endsWith('_pais_sexo')) {
       const base = path.replace('_pais_sexo', '').replace(/\.$/, '');
-      const person = base.split('.').reduce((acc, part) => acc && acc[part], obj);
-      const pais = person?.pais;
-      const sexo = person?.sexo;
+      const personValue = getPathValue(base, obj);
+      const person = typeof personValue === 'object' && personValue !== null ? (personValue as Record<string, unknown>) : null;
+      const pais = typeof person?.pais === 'string' ? person.pais : '';
+      const sexo = typeof person?.sexo === 'string' ? person.sexo : '';
       
       if (!pais && !sexo) return '';
       return `(${pais || ''}${pais && sexo ? ' - ' : ''}${sexo || ''})`;
@@ -153,8 +163,8 @@ export async function generate08(data: any, type: 'auto' | 'moto') {
 
     // Nueva lógica para Lugar y Fecha unificados
     if (path === '_lugar_fecha') {
-      const lugar = obj.lugar || '';
-      const fechaFull = obj.fecha || '';
+      const lugar = typeof obj.lugar === 'string' ? obj.lugar : '';
+      const fechaFull = typeof obj.fecha === 'string' ? obj.fecha : '';
       
       let fechaFormatted = fechaFull;
       if (fechaFull && fechaFull.includes('-')) {
@@ -168,11 +178,11 @@ export async function generate08(data: any, type: 'auto' | 'moto') {
       return `${lugar}${lugar && fechaFormatted ? ', ' : ''}${fechaFormatted}`;
     }
 
-    return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+    return getPathValue(path, obj);
   }
 
   // 4. Escribir datos sobre el PDF
-  for (const map of mappings) {
+  for (const map of mappings as PDFMapItem[]) {
     const value = getValue(map.field, data);
     const targetPage = pages[map.page];
     
@@ -250,4 +260,3 @@ export async function generate08(data: any, type: 'auto' | 'moto') {
   const pdfBytes = await pdfDoc.save();
   return pdfBytes;
 }
-

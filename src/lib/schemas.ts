@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const PersonaSchema = z.object({
   tipo_persona: z.enum(['fisica', 'juridica']).default('fisica'),
-  nombre: z.string().min(2, 'Requerido'),
+  nombre: z.string().optional().or(z.literal('')),
   pais: z.string().optional().or(z.literal('')),
   sexo: z.string().optional().or(z.literal('')),
   dni: z.string().optional().or(z.literal('')),
@@ -47,9 +47,9 @@ export const PersonaSchema = z.object({
 
 export const VehiculoSchema = z.object({
   tipo: z.string().min(1, 'El tipo de vehículo es requerido'),
-  marca: z.string().min(1, 'La marca es requerida'),
-  modelo: z.string().min(1, 'El modelo es requerido'),
-  dominio: z.string().min(3, 'Patente/Dominio inválido'),
+  marca: z.string().optional().or(z.literal('')),
+  modelo: z.string().optional().or(z.literal('')),
+  dominio: z.string().optional().or(z.literal('')).refine((val) => !val || val.length >= 3, 'Patente/Dominio inválido'),
   motor: z.string().optional().or(z.literal('')),
   chasis: z.string().optional().or(z.literal('')), 
   n_motor: z.string().optional().or(z.literal('')),
@@ -103,9 +103,9 @@ export const TramiteSchema = z.object({
   comprador: PersonaSchema,
   comprador_condominio: PersonaOpcionalSchema.optional(),
   vehiculo: VehiculoSchema,
-  precio: z.string().min(1, 'El precio es requerido'),
-  fecha: z.string().min(1, 'La fecha es requerida'),
-  lugar: z.string().min(1, 'El lugar de firma es requerido'),
+  precio: z.string().optional().or(z.literal('')),
+  fecha: z.string().optional().or(z.literal('')),
+  lugar: z.string().optional().or(z.literal('')),
   observaciones: z.string().optional().or(z.literal('')),
 });
 
@@ -113,7 +113,12 @@ export const TramiteSchema = z.object({
 
 export type Persona = z.infer<typeof PersonaSchema>;
 export type Vehiculo = z.infer<typeof VehiculoSchema>;
-export type TramiteData = z.infer<typeof TramiteSchema> & {
+export type TramiteFormValues = z.input<typeof TramiteSchema> & {
+  id?: string;
+  status?: string;
+};
+
+export type TramiteData = z.output<typeof TramiteSchema> & {
   id?: string;
   status?: string;
 };

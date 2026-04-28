@@ -3,10 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronLeft, Save, FileText, CheckCircle, User, Users, Car, CreditCard, Loader2 } from 'lucide-react';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm, FormProvider, type FieldPath } from 'react-hook-form';
 import { toast } from 'sonner';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { TramiteSchema, TramiteData } from '@/lib/schemas';
+import { TramiteSchema, type TramiteFormValues } from '@/lib/schemas';
 import { generate08 } from '@/lib/pdf/generator';
 import { supabase } from '@/lib/supabase';
 
@@ -24,7 +24,7 @@ const steps = [
 
 interface WizardProps {
   type: 'auto' | 'moto';
-  initialData?: TramiteData;
+  initialData?: TramiteFormValues;
   onSuccess?: () => void;
 }
 
@@ -33,8 +33,14 @@ export default function Wizard({ type, initialData, onSuccess }: WizardProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const methods = useForm<TramiteData>({
-    resolver: zodResolver(TramiteSchema) as any,
+  const getErrorMessage = (err: unknown) => {
+    if (err instanceof Error) return err.message;
+    if (typeof err === 'object' && err !== null && 'message' in err) return String((err as { message: unknown }).message);
+    return String(err);
+  };
+
+  const methods = useForm<TramiteFormValues>({
+    resolver: zodResolver(TramiteSchema, undefined, { raw: true }),
     mode: 'onBlur',
     values: initialData || {
       vehiculo: {
@@ -92,7 +98,7 @@ export default function Wizard({ type, initialData, onSuccess }: WizardProps) {
 
   const next = async () => {
       const fields = getFieldsForStep(currentStep);
-      const isValid = await methods.trigger(fields as any);
+      const isValid = await methods.trigger(fields);
       
       if (isValid) {
         setCurrentStep((s) => Math.min(s + 1, steps.length - 1));
@@ -112,7 +118,7 @@ export default function Wizard({ type, initialData, onSuccess }: WizardProps) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const getFieldsForStep = (step: number) => {
+  const getFieldsForStep = (step: number): FieldPath<TramiteFormValues>[] => {
     switch (step) {
       case 0: return ['vendedor'];
       case 1: return ['vendedor_condominio'];
@@ -129,8 +135,7 @@ export default function Wizard({ type, initialData, onSuccess }: WizardProps) {
     setIsSaving(true);
     const formData = methods.getValues();
     const data = { ...formData, tipo_tramite: type };
-    
-    // Si ya tiene un estado 'finalizado', lo mantenemos. De lo contrario, es 'borrador'.
+
     const currentStatus = initialData?.status === 'finalizado' ? 'finalizado' : 'borrador';
     
     try {
@@ -159,8 +164,8 @@ export default function Wizard({ type, initialData, onSuccess }: WizardProps) {
 
       toast.success(currentStatus === 'finalizado' ? 'Trámite guardado correctamente.' : 'Borrador guardado correctamente.');
       if (onSuccess) onSuccess();
-    } catch (error: any) {
-      toast.error('Error: ' + error.message);
+    } catch (error: unknown) {
+      toast.error('Error: ' + getErrorMessage(error));
     } finally {
       setIsSaving(false);
     }
@@ -169,28 +174,57 @@ export default function Wizard({ type, initialData, onSuccess }: WizardProps) {
   const onGeneratePDF = async () => {
     const isValid = await methods.trigger();
     if (!isValid) {
-      toast.error('Por favor, completa todos los campos requeridos correctamente.');
+      toast.error('Hay campos con formato inválido. Revisalos antes de imprimir.');
       return;
     }
 
-    setIsGenerating(true);
     const formData = methods.getValues();
     const data = { ...formData, tipo_tramite: type };
     
+    const getValue = (path: string): unknown => {
+      return path.split('.').reduce<unknown>((acc, part) => {
+        if (typeof acc === 'object' && acc !== null && part in acc) {
+          return (acc as Record<string, unknown>)[part];
+        }
+        return undefined;
+      }, formData as unknown);
+    };
+    const fieldsToCheck = [
+      { path: 'vendedor.nombre', label: 'Vendedor: Nombre' },
+      { path: 'comprador.nombre', label: 'Comprador: Nombre' },
+      { path: 'vehiculo.dominio', label: 'Vehículo: Dominio' },
+      { path: 'vehiculo.marca', label: 'Vehículo: Marca' },
+      { path: 'vehiculo.modelo', label: 'Vehículo: Modelo' },
+      { path: 'precio', label: 'Operación: Precio' },
+      { path: 'fecha', label: 'Operación: Fecha' },
+      { path: 'lugar', label: 'Operación: Lugar' },
+    ];
+
+    const missingFields = fieldsToCheck
+      .filter(({ path }) => {
+        const value = getValue(path);
+        return value === undefined || value === null || String(value).trim() === '';
+      })
+      .map(({ label }) => label);
+
+    if (missingFields.length > 0) {
+      const message = `Estos campos no han sido completados:\n\n- ${missingFields.join('\n- ')}\n\n¿Desea continuar con la impresión?`;
+      const shouldContinue = window.confirm(message);
+      if (!shouldContinue) return;
+    }
+
+    setIsGenerating(true);
     try {
-      // Guardar en el historial con estado 'finalizado'
       let result;
-      if (initialData && (initialData as any).id) {
-        // Update existing
+      if (initialData && initialData.id) {
         result = await supabase
           .from('tramites_08')
           .update({
             data: data,
             status: 'finalizado'
           })
-          .eq('id', (initialData as any).id);
+          .eq('id', initialData.id);
       } else {
-        // Insert new
         result = await supabase
           .from('tramites_08')
           .insert([{
@@ -202,7 +236,6 @@ export default function Wizard({ type, initialData, onSuccess }: WizardProps) {
 
       if (result.error) throw result.error;
 
-      // Generar el PDF
       const pdfBytes = await generate08(formData, type);
       const blob = new Blob([new Uint8Array(pdfBytes)], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
@@ -211,8 +244,8 @@ export default function Wizard({ type, initialData, onSuccess }: WizardProps) {
       toast.success('Formulario guardado en el historial y PDF generado.');
       
       if (onSuccess) onSuccess();
-    } catch (error: any) {
-      toast.error('Error: ' + error.message);
+    } catch (error: unknown) {
+      toast.error('Error: ' + getErrorMessage(error));
     } finally {
       setIsGenerating(false);
     }

@@ -3,30 +3,32 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { motion } from 'framer-motion';
-import { FileText, Calendar, User, Car, ArrowRight, Loader2, Trash2, Download, Bike, Edit3 } from 'lucide-react';
+import { FileText, Calendar, Car, Loader2, Trash2, Download, Bike, Edit3 } from 'lucide-react';
 import { toast } from 'sonner';
 import { generate08 } from '@/lib/pdf/generator';
 
-interface Tramite {
+export interface TramiteRow {
   id: string;
-  data: any;
+  data: Record<string, unknown>;
   status: string;
   created_at: string;
 }
 
 interface HistoryViewProps {
-  onEdit: (tramite: Tramite) => void;
+  onEdit: (tramite: TramiteRow) => void;
 }
 
 export default function HistoryView({ onEdit }: HistoryViewProps) {
-  const [tramites, setTramites] = useState<Tramite[]>([]);
+  const [tramites, setTramites] = useState<TramiteRow[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchTramites();
-  }, []);
+  const getErrorMessage = (err: unknown) => {
+    if (err instanceof Error) return err.message;
+    if (typeof err === 'object' && err !== null && 'message' in err) return String((err as { message: unknown }).message);
+    return String(err);
+  };
 
-  const fetchTramites = async () => {
+  async function fetchTramites() {
     setLoading(true);
     const { data, error } = await supabase
       .from('tramites_08')
@@ -39,7 +41,13 @@ export default function HistoryView({ onEdit }: HistoryViewProps) {
       setTramites(data || []);
     }
     setLoading(false);
-  };
+  }
+
+  useEffect(() => {
+    Promise.resolve().then(() => {
+      void fetchTramites();
+    });
+  }, []);
 
   const deleteTramite = async (id: string) => {
     if (!window.confirm('¿Estás seguro de que deseas eliminar este trámite?')) return;
@@ -57,16 +65,20 @@ export default function HistoryView({ onEdit }: HistoryViewProps) {
     }
   };
 
-  const downloadPDF = async (tramite: Tramite) => {
+  const downloadPDF = async (tramite: TramiteRow) => {
     try {
-      const type = tramite.data.vehiculo?.tipo?.toLowerCase().includes('moto') ? 'moto' : 'auto';
-      const pdfBytes = await generate08(tramite.data, type as 'auto' | 'moto');
+      const data = tramite.data;
+      const vehiculo = typeof data.vehiculo === 'object' && data.vehiculo !== null ? (data.vehiculo as Record<string, unknown>) : null;
+      const vehiculoTipo = typeof vehiculo?.tipo === 'string' ? vehiculo.tipo : '';
+      const type: 'auto' | 'moto' = vehiculoTipo.toLowerCase().includes('moto') ? 'moto' : 'auto';
+
+      const pdfBytes = await generate08(data, type);
       const blob = new Blob([new Uint8Array(pdfBytes)], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
       toast.success('PDF generado correctamente');
-    } catch (error: any) {
-      toast.error('Error generando PDF: ' + error.message);
+    } catch (error: unknown) {
+      toast.error('Error generando PDF: ' + getErrorMessage(error));
     }
   };
 
@@ -99,8 +111,17 @@ export default function HistoryView({ onEdit }: HistoryViewProps) {
       ) : (
         <div className="grid grid-cols-1 gap-6">
           {tramites.map((tramite) => {
-            const isMoto = tramite.data.tipo_tramite === 'moto' || 
-                          tramite.data.vehiculo?.tipo?.toLowerCase().includes('moto');
+            const data = tramite.data;
+            const tipoTramite = typeof data.tipo_tramite === 'string' ? data.tipo_tramite : '';
+            const vehiculo = typeof data.vehiculo === 'object' && data.vehiculo !== null ? (data.vehiculo as Record<string, unknown>) : null;
+            const vehiculoTipo = typeof vehiculo?.tipo === 'string' ? vehiculo.tipo : '';
+            const isMoto = tipoTramite === 'moto' || vehiculoTipo.toLowerCase().includes('moto');
+
+            const vendedor = typeof data.vendedor === 'object' && data.vendedor !== null ? (data.vendedor as Record<string, unknown>) : null;
+            const vendedorNombre = typeof vendedor?.nombre === 'string' && vendedor.nombre.trim() ? vendedor.nombre : 'Sin nombre';
+
+            const dominio = typeof vehiculo?.dominio === 'string' ? vehiculo.dominio : 'S/D';
+            const marca = typeof vehiculo?.marca === 'string' ? vehiculo.marca : '';
             return (
               <motion.div
                 key={tramite.id}
@@ -116,7 +137,7 @@ export default function HistoryView({ onEdit }: HistoryViewProps) {
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2 mb-1">
                         <h3 className="text-lg md:text-xl font-bold text-gray-900 tracking-tight truncate max-w-[150px] md:max-w-none">
-                          {tramite.data.vendedor?.nombre || 'Sin nombre'}
+                          {vendedorNombre}
                         </h3>
                         <span className={`px-2 py-0.5 rounded-full text-[8px] md:text-[10px] font-black uppercase tracking-wider ${
                           tramite.status === 'borrador' ? 'bg-amber-50 text-amber-600 border border-amber-100' : 'bg-emerald-50 text-emerald-600 border border-emerald-100'
@@ -131,7 +152,7 @@ export default function HistoryView({ onEdit }: HistoryViewProps) {
                         </div>
                         <div className="flex items-center gap-2">
                           {isMoto ? <Bike size={14} className="text-brand-mint" /> : <Car size={14} className="text-brand-mint" />}
-                          <span className="truncate">{tramite.data.vehiculo?.dominio || 'S/D'} - {tramite.data.vehiculo?.marca}</span>
+                          <span className="truncate">{dominio} - {marca}</span>
                         </div>
                       </div>
                     </div>

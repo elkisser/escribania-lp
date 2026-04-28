@@ -3,17 +3,19 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Wizard from '@/components/Wizard';
-import HistoryView from '@/components/HistoryView';
+import HistoryView, { type TramiteRow } from '@/components/HistoryView';
 import LoginView from '@/components/LoginView';
 import { supabase } from '@/lib/supabase';
-import { FileText, Shield, Zap, Info, Car, Bike, ArrowLeft, ChevronRight, Clock, Users, LogOut, Loader2 } from 'lucide-react';
+import { Car, Bike, ArrowLeft, ChevronRight, Clock, LogOut, Loader2 } from 'lucide-react';
+import { type Session } from '@supabase/supabase-js';
+import { type TramiteFormValues } from '@/lib/schemas';
 
 export default function Home() {
-  const [session, setSession] = useState<any>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [tramiteType, setTramiteType] = useState<'auto' | 'moto' | null>(null);
   const [view, setView] = useState<'home' | 'history' | 'edit'>('home');
-  const [editingTramite, setEditingTramite] = useState<any>(null);
+  const [editingTramite, setEditingTramite] = useState<TramiteFormValues | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -43,13 +45,20 @@ export default function Home() {
     setEditingTramite(null);
   };
 
-  const handleEdit = (tramite: any) => {
+  const handleEdit = (tramite: TramiteRow) => {
+    const data = tramite.data as unknown as TramiteFormValues;
     setEditingTramite({
-      ...tramite.data,
+      ...data,
       id: tramite.id,
       status: tramite.status
     });
-    setTramiteType(tramite.data.tipo_tramite || (tramite.data.vehiculo?.tipo?.toLowerCase().includes('moto') ? 'moto' : 'auto'));
+
+    const tipoTramite = typeof tramite.data.tipo_tramite === 'string' ? tramite.data.tipo_tramite : '';
+    const vehiculo = typeof tramite.data.vehiculo === 'object' && tramite.data.vehiculo !== null ? (tramite.data.vehiculo as Record<string, unknown>) : null;
+    const vehiculoTipo = typeof vehiculo?.tipo === 'string' ? vehiculo.tipo : '';
+    const derivedType: 'auto' | 'moto' = tipoTramite === 'moto' || vehiculoTipo.toLowerCase().includes('moto') ? 'moto' : 'auto';
+
+    setTramiteType(derivedType);
     setView('edit');
   };
 
@@ -167,7 +176,7 @@ export default function Home() {
                 </div>
                 <Wizard 
                   type={tramiteType!} 
-                  initialData={editingTramite} 
+                  initialData={editingTramite || undefined} 
                   onSuccess={handleUpdateSuccess}
                 />
               </motion.div>
@@ -278,4 +287,3 @@ export default function Home() {
     </main>
   );
 }
-
