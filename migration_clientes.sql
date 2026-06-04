@@ -1,7 +1,5 @@
--- Tables for Vehicles Transfer Application (Formulario 08)
-
--- Enable UUID extension if not enabled
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+-- Migración: Agregar sistema de gestión de clientes
+-- Este script agrega las tablas necesarias para el sistema de autocompletado de clientes
 
 -- Tabla: usuarios (para autenticación básica)
 CREATE TABLE IF NOT EXISTS usuarios (
@@ -67,58 +65,41 @@ CREATE INDEX IF NOT EXISTS idx_clientes_dni ON clientes(dni);
 CREATE INDEX IF NOT EXISTS idx_clientes_cuit ON clientes(cuit);
 CREATE INDEX IF NOT EXISTS idx_clientes_nombre ON clientes(nombre);
 
--- Tabla: personas (legacy - mantenida por compatibilidad)
-CREATE TABLE IF NOT EXISTS personas (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    nombre TEXT NOT NULL,
-    apellido TEXT NOT NULL,
-    dni TEXT UNIQUE NOT NULL,
-    cuit TEXT,
-    fecha_nacimiento DATE,
-    estado_civil TEXT,
-    domicilio TEXT,
-    email TEXT,
-    telefono TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Tabla: vehiculos
-CREATE TABLE IF NOT EXISTS vehiculos (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    tipo TEXT CHECK (tipo IN ('auto', 'moto')),
-    marca TEXT NOT NULL,
-    modelo TEXT NOT NULL,
-    dominio TEXT UNIQUE NOT NULL,
-    motor TEXT,
-    chasis TEXT,
-    uso TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Tabla: tramites_08 (Simplificada para borradores dinámicos)
-CREATE TABLE IF NOT EXISTS tramites_08 (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID REFERENCES usuarios(id) ON DELETE CASCADE,
-    data JSONB NOT NULL, -- Contiene todo el estado del formulario
-    status TEXT DEFAULT 'borrador', -- borrador, finalizado
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Índice para filtrar trámites por usuario
-CREATE INDEX IF NOT EXISTS idx_tramites_user_id ON tramites_08(user_id);
-
-
--- Row Level Security (RLS) - Simplificado para este ejemplo
+-- Habilitar RLS
 ALTER TABLE usuarios ENABLE ROW LEVEL SECURITY;
 ALTER TABLE clientes ENABLE ROW LEVEL SECURITY;
-ALTER TABLE personas ENABLE ROW LEVEL SECURITY;
-ALTER TABLE vehiculos ENABLE ROW LEVEL SECURITY;
-ALTER TABLE tramites_08 ENABLE ROW LEVEL SECURITY;
 
--- Poliza publica (para propósitos de desarrollo)
+-- Políticas de seguridad (simplificadas para desarrollo)
 CREATE POLICY "Public full access" ON usuarios FOR ALL USING (true);
 CREATE POLICY "Public full access" ON clientes FOR ALL USING (true);
-CREATE POLICY "Public full access" ON personas FOR ALL USING (true);
-CREATE POLICY "Public full access" ON vehiculos FOR ALL USING (true);
-CREATE POLICY "Public full access" ON tramites_08 FOR ALL USING (true);
 
+-- Función para actualizar updated_at automáticamente
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger para actualizar updated_at en clientes
+DROP TRIGGER IF EXISTS update_clientes_updated_at ON clientes;
+CREATE TRIGGER update_clientes_updated_at
+    BEFORE UPDATE ON clientes
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+-- Crear usuarios desde auth.users de Supabase (si existe)
+-- Este INSERT solo funciona si tienes configurado Supabase Auth
+INSERT INTO usuarios (id, email, nombre)
+SELECT 
+    id,
+    email,
+    COALESCE(raw_user_meta_data->>'full_name', email) as nombre
+FROM auth.users
+ON CONFLICT (id) DO NOTHING;
+
+COMMENT ON TABLE clientes IS 'Tabla para almacenar datos de clientes asociados a cada usuario';
+COMMENT ON COLUMN clientes.user_id IS 'Referencia al usuario que creó el cliente';
+COMMENT ON COLUMN clientes.dni IS 'DNI sin puntos ni guiones';
+COMMENT ON COLUMN clientes.cuit IS 'CUIT sin guiones';

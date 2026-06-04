@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronLeft, Save, FileText, CheckCircle, User, Users, Car, CreditCard, Loader2 } from 'lucide-react';
 import { useForm, FormProvider, type FieldPath } from 'react-hook-form';
@@ -26,9 +26,10 @@ interface WizardProps {
   type: 'auto' | 'moto';
   initialData?: TramiteFormValues;
   onSuccess?: () => void;
+  userId?: string; // ID del usuario logueado
 }
 
-export default function Wizard({ type, initialData, onSuccess }: WizardProps) {
+export default function Wizard({ type, initialData, onSuccess, userId }: WizardProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -215,6 +216,69 @@ export default function Wizard({ type, initialData, onSuccess }: WizardProps) {
 
     setIsGenerating(true);
     try {
+      // Guardar/actualizar clientes automáticamente si tenemos userId
+      if (userId) {
+        const saveClientData = async (personData: Record<string, unknown>) => {
+          if (!personData?.nombre || !personData?.dni) return;
+          
+          const cleanDni = String(personData.dni).replace(/[.\-\s]/g, '');
+          
+          // Buscar si ya existe
+          const { data: existing } = await supabase
+            .from('clientes')
+            .select('id')
+            .eq('user_id', userId)
+            .eq('dni', cleanDni)
+            .single();
+
+          const clientData = {
+            user_id: userId,
+            tipo_persona: personData.tipo_persona || 'fisica',
+            nombre: personData.nombre,
+            apellido: personData.apellido,
+            dni: cleanDni,
+            cuit: personData.cuit ? String(personData.cuit).replace(/[.\-\s]/g, '') : null,
+            pais: personData.pais,
+            sexo: personData.sexo,
+            fecha_nacimiento: personData.fecha_nacimiento,
+            lugar_nacimiento: personData.lugar_nacimiento,
+            autoridad_o_pais_expidio: personData.autoridad_o_pais_expidio,
+            telefono: personData.telefono,
+            profesion: personData.profesion,
+            domicilio_real: personData.domicilio_real,
+            domicilio_real_numero: personData.domicilio_real_numero,
+            domicilio_real_piso: personData.domicilio_real_piso,
+            domicilio_real_depto: personData.domicilio_real_depto,
+            domicilio_real_cp: personData.domicilio_real_cp,
+            domicilio_real_localidad: personData.domicilio_real_localidad,
+            domicilio_legal: personData.domicilio_legal,
+            domicilio_legal_numero: personData.domicilio_legal_numero,
+            domicilio_legal_piso: personData.domicilio_legal_piso,
+            domicilio_legal_depto: personData.domicilio_legal_depto,
+            domicilio_legal_cp: personData.domicilio_legal_cp,
+            domicilio_legal_localidad: personData.domicilio_legal_localidad,
+            domicilio_departamento_o_partido: personData.domicilio_departamento_o_partido,
+            domicilio_provincia: personData.domicilio_provincia,
+            email: personData.email,
+            updated_at: new Date().toISOString(),
+          };
+
+          if (existing) {
+            await supabase.from('clientes').update(clientData).eq('id', existing.id);
+          } else {
+            await supabase.from('clientes').insert(clientData);
+          }
+        };
+        
+        // Guardar todas las personas del formulario
+        await Promise.all([
+          formData.vendedor ? saveClientData(formData.vendedor) : Promise.resolve(),
+          formData.vendedor_condominio ? saveClientData(formData.vendedor_condominio) : Promise.resolve(),
+          formData.comprador ? saveClientData(formData.comprador) : Promise.resolve(),
+          formData.comprador_condominio ? saveClientData(formData.comprador_condominio) : Promise.resolve(),
+        ]);
+      }
+
       let result;
       if (initialData && initialData.id) {
         result = await supabase
@@ -315,10 +379,10 @@ export default function Wizard({ type, initialData, onSuccess }: WizardProps) {
               </div>
 
               <div className="min-h-[250px] md:min-h-[350px]">
-                {currentStep === 0 && <StepPerson type="vendedor" />}
-                {currentStep === 1 && <StepPerson type="vendedor_condominio" />}
-                {currentStep === 2 && <StepPerson type="comprador" />}
-                {currentStep === 3 && <StepPerson type="comprador_condominio" />}
+                {currentStep === 0 && <StepPerson type="vendedor" userId={userId} />}
+                {currentStep === 1 && <StepPerson type="vendedor_condominio" userId={userId} />}
+                {currentStep === 2 && <StepPerson type="comprador" userId={userId} />}
+                {currentStep === 3 && <StepPerson type="comprador_condominio" userId={userId} />}
                 {currentStep === 4 && <StepVehicle type={type} />}
                 {currentStep === 5 && <StepOperation />}
               </div>

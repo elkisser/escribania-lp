@@ -3,6 +3,12 @@
 import React from 'react';
 import { FieldValues, useFormContext } from 'react-hook-form';
 import { MapPin, DollarSign, Calendar, Loader2 } from 'lucide-react';
+import ClientAutocomplete from './ClientAutocomplete';
+
+interface StepPersonProps {
+  type: 'vendedor' | 'comprador' | 'vendedor_condominio' | 'comprador_condominio';
+  userId?: string; // ID del usuario logueado para el autocompletado
+}
 
 
 interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -88,7 +94,7 @@ export function FormInput({ label, name, icon, ...props }: FormInputProps) {
   );
 }
 
-export function StepPerson({ type }: { type: 'vendedor' | 'comprador' | 'vendedor_condominio' | 'comprador_condominio' }) {
+export function StepPerson({ type, userId }: StepPersonProps) {
   const prefix = `${type}.`;
   const { watch, setValue } = useFormContext();
   const tipoPersona = watch(`${prefix}tipo_persona`) || 'fisica';
@@ -96,6 +102,15 @@ export function StepPerson({ type }: { type: 'vendedor' | 'comprador' | 'vendedo
 
   return (
     <div className="space-y-8 md:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20 md:pb-0">
+      {/* Autocompletado de clientes */}
+      {userId && (
+        <ClientAutocomplete 
+          userId={userId}
+          prefix={type}
+          methods={useFormContext()}
+        />
+      )}
+
       <div className="flex gap-2 p-1 bg-brand-mint/5 rounded-2xl w-fit mb-2 md:mb-6 border border-brand-mint/10">
         <button
           type="button"

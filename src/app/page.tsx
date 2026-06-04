@@ -178,6 +178,7 @@ export default function Home() {
                   type={tramiteType!} 
                   initialData={editingTramite || undefined} 
                   onSuccess={handleUpdateSuccess}
+                  userId={session?.user?.id}
                 />
               </motion.div>
             ) : !tramiteType ? (
@@ -269,7 +270,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <Wizard type={tramiteType!} />
+                <Wizard type={tramiteType!} userId={session?.user?.id} />
               </motion.div>
             )}
         </AnimatePresence>
