@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Wizard from '@/components/Wizard';
 import HistoryView, { type TramiteRow } from '@/components/HistoryView';
 import LoginView from '@/components/LoginView';
+import SupportModal from '@/components/SupportModal';
 import { supabase } from '@/lib/supabase';
 import { Car, Bike, ArrowLeft, ChevronRight, Clock, LogOut, Loader2 } from 'lucide-react';
 import { type Session } from '@supabase/supabase-js';
@@ -16,6 +17,7 @@ export default function Home() {
   const [tramiteType, setTramiteType] = useState<'auto' | 'moto' | null>(null);
   const [view, setView] = useState<'home' | 'history' | 'edit'>('home');
   const [editingTramite, setEditingTramite] = useState<TramiteFormValues | null>(null);
+  const [showSupportModal, setShowSupportModal] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -100,7 +102,12 @@ export default function Home() {
             >
               <Clock size={18} /> Historial
             </button>
-            <a href="mailto:somos.env@gmail.com" className="bg-brand-mint/10 text-brand-mint px-5 py-2.5 rounded-xl hover:bg-brand-mint/20 transition-all">Soporte</a>
+            <button 
+              onClick={() => setShowSupportModal(true)}
+              className="bg-brand-mint/10 text-brand-mint px-5 py-2.5 rounded-xl hover:bg-brand-mint/20 transition-all"
+            >
+              Soporte
+            </button>
             <button 
               onClick={handleLogout}
               className="p-2.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
@@ -118,6 +125,13 @@ export default function Home() {
               title="Historial"
             >
               <Clock size={20} />
+            </button>
+            <button 
+              onClick={() => setShowSupportModal(true)}
+              className="p-2.5 text-brand-mint bg-brand-mint/10 rounded-xl transition-all"
+              title="Soporte"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
             </button>
             <button 
               onClick={handleLogout}
@@ -285,6 +299,9 @@ export default function Home() {
       <footer className="py-12 text-center text-gray-400 text-sm font-bold uppercase tracking-widest mt-auto bg-[#F8FAFC]">
         <p>© 2026 RM Escribanía Argentina</p>
       </footer>
+
+      {/* Support Modal */}
+      <SupportModal isOpen={showSupportModal} onClose={() => setShowSupportModal(false)} />
     </main>
   );
 }
