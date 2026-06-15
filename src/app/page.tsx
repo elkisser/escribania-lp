@@ -7,21 +7,33 @@ import HistoryView, { type TramiteRow } from '@/components/HistoryView';
 import LoginView from '@/components/LoginView';
 import SupportModal from '@/components/SupportModal';
 import { supabase } from '@/lib/supabase';
-import { Car, Bike, ArrowLeft, ChevronRight, Clock, LogOut, Loader2 } from 'lucide-react';
+import { Car, Bike, ArrowLeft, ChevronRight, Clock, LogOut, Loader2, WifiOff, Mail, MessageCircle } from 'lucide-react';
 import { type Session } from '@supabase/supabase-js';
 import { type TramiteFormValues } from '@/lib/schemas';
 
 export default function Home() {
   const [session, setSession] = useState<Session | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const [supabaseError, setSupabaseError] = useState(false);
   const [tramiteType, setTramiteType] = useState<'auto' | 'moto' | null>(null);
   const [view, setView] = useState<'home' | 'history' | 'edit'>('home');
   const [editingTramite, setEditingTramite] = useState<TramiteFormValues | null>(null);
   const [showSupportModal, setShowSupportModal] = useState(false);
 
   useEffect(() => {
+    // Timeout de 8 segundos para cargar Supabase
+    const timeoutId = setTimeout(() => {
+      setSupabaseError(true);
+      setAuthLoading(false);
+    }, 8000);
+
     supabase.auth.getSession().then(({ data: { session } }) => {
+      clearTimeout(timeoutId);
       setSession(session);
+      setAuthLoading(false);
+    }).catch(() => {
+      clearTimeout(timeoutId);
+      setSupabaseError(true);
       setAuthLoading(false);
     });
 
@@ -29,7 +41,10 @@ export default function Home() {
       setSession(session);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   useEffect(() => {
@@ -68,6 +83,57 @@ export default function Home() {
     setView('history');
     setEditingTramite(null);
   };
+
+  if (supabaseError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] p-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-md w-full bg-white rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] p-8 md:p-10 border border-gray-50 relative overflow-hidden text-center"
+        >
+          <div className="absolute top-0 right-0 w-32 h-32 bg-red-100 rounded-bl-full -z-0 opacity-40 translate-x-8 -translate-y-8" />
+
+          <div className="relative z-10">
+            <div className="w-20 h-20 bg-red-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
+              <WifiOff className="w-10 h-10 text-red-400" strokeWidth={2} />
+            </div>
+            <h1 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight mb-3">
+              Problema de <span className="text-red-500">conexión</span>
+            </h1>
+            <p className="text-gray-500 font-medium leading-relaxed mb-8">
+              No pudimos conectar con el servidor. Por favor revisá tu conexión a internet o contactá al soporte si el problema persiste.
+            </p>
+
+            <div className="space-y-3">
+              <button
+                onClick={() => window.location.reload()}
+                className="w-full py-4 bg-brand-black text-white rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl shadow-gray-200 hover:bg-gray-800 transition-all flex items-center justify-center gap-3 active:scale-[0.98]"
+              >
+                <Loader2 className="w-5 h-5" /> Reintentar
+              </button>
+
+              <a
+                href="mailto:somos.env@gmail.com"
+                className="w-full py-4 bg-gray-50 text-gray-700 rounded-2xl font-bold text-sm hover:bg-gray-100 transition-all flex items-center justify-center gap-3 active:scale-[0.98]"
+              >
+                <Mail className="w-5 h-5 text-brand-mint" strokeWidth={2} /> somos.env@gmail.com
+              </a>
+
+              <a
+                href="https://wa.me/543435086453"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-4 bg-gray-50 text-gray-700 rounded-2xl font-bold text-sm hover:bg-gray-100 transition-all flex items-center justify-center gap-3 active:scale-[0.98]"
+              >
+                <MessageCircle className="w-5 h-5 text-green-500" strokeWidth={2} /> +54 343 508 6453
+              </a>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   if (authLoading) {
     return (
