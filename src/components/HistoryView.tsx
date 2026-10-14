@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { FileText, Calendar, Car, Loader2, Trash2, Download, Bike, Edit3, Search, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { generate08 } from '@/lib/pdf/generator';
+import { downloadPdfBlob, getPdfFileName } from '@/lib/pdf/download';
 
 export interface TramiteRow {
   id: string;
@@ -21,6 +22,7 @@ interface HistoryViewProps {
 export default function HistoryView({ onEdit }: HistoryViewProps) {
   const [tramites, setTramites] = useState<TramiteRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
   
   // Estados para filtros
   const [searchTerm, setSearchTerm] = useState('');
@@ -139,18 +141,20 @@ export default function HistoryView({ onEdit }: HistoryViewProps) {
 
   const downloadPDF = async (tramite: TramiteRow) => {
     try {
+      setDownloadingId(tramite.id);
       const data = tramite.data;
       const vehiculo = typeof data.vehiculo === 'object' && data.vehiculo !== null ? (data.vehiculo as Record<string, unknown>) : null;
       const vehiculoTipo = typeof vehiculo?.tipo === 'string' ? vehiculo.tipo : '';
       const type: 'auto' | 'moto' = vehiculoTipo.toLowerCase().includes('moto') ? 'moto' : 'auto';
 
       const pdfBytes = await generate08(data, type);
-      const blob = new Blob([new Uint8Array(pdfBytes)], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
-      toast.success('PDF generado correctamente');
+      const fileName = getPdfFileName(type, data);
+      downloadPdfBlob(pdfBytes, fileName);
+      toast.success(`PDF descargado correctamente: ${fileName}`);
     } catch (error: unknown) {
       toast.error('Error generando PDF: ' + getErrorMessage(error));
+    } finally {
+      setDownloadingId(null);
     }
   };
 
@@ -364,9 +368,16 @@ export default function HistoryView({ onEdit }: HistoryViewProps) {
                       </div>
                       <button
                         onClick={() => downloadPDF(tramite)}
-                        className="flex items-center gap-2 px-5 md:px-6 py-2.5 md:py-3 bg-brand-black text-white rounded-xl font-bold text-xs md:text-sm hover:bg-gray-800 transition-all shadow-lg shadow-gray-200"
+                        disabled={downloadingId === tramite.id}
+                        className="flex items-center gap-2 px-5 md:px-6 py-2.5 md:py-3 bg-brand-black text-white rounded-xl font-bold text-xs md:text-sm hover:bg-gray-800 transition-all shadow-lg shadow-gray-200 disabled:opacity-50"
+                        title="Descargar Formulario 08 en PDF"
                       >
-                        <Download size={16} className="md:w-4 md:h-4" /> <span className="md:inline">PDF</span>
+                        {downloadingId === tramite.id ? (
+                          <Loader2 size={16} className="md:w-4 md:h-4 animate-spin" />
+                        ) : (
+                          <Download size={16} className="md:w-4 md:h-4" />
+                        )}
+                        <span className="md:inline">Descargar PDF</span>
                       </button>
                     </div>
                   </div>

@@ -4,26 +4,18 @@ import { MOTO_MAPPING } from '@/config/pdfMappingMoto';
 import type { PDFMapItem } from '@/config/pdfMappingAuto';
 
 export async function generate08(data: Record<string, unknown>, type: 'auto' | 'moto') {
-  // 1. Cargar el PDF base desde la carpeta public
-  const templateUrl = `/templates/08_${type}.pdf`;
-  let existingPdfBytes;
-  
-  try {
-    const response = await fetch(templateUrl);
-    if (!response.ok) throw new Error(`Template not found at ${templateUrl}`);
-    existingPdfBytes = await response.arrayBuffer();
-  } catch {
-    console.warn('No se pudo cargar la plantilla oficial, usando un documento en blanco para previsualizar.');
-    // Fallback social solo para previsualización si no existen los archivos
-    const pdfDoc = await PDFDocument.create();
-    // Añadimos 2 páginas por defecto en el fallback (Frente y Dorso)
-    pdfDoc.addPage([595.28, 841.89]);
-    pdfDoc.addPage([595.28, 841.89]);
-    existingPdfBytes = await pdfDoc.save();
-  }
+  // Crear documento en blanco (A4 estándar: 595.28 x 841.89 puntos)
+  // Genera las 4 páginas en blanco para imprimir sobre las hojas preimpresas del formulario 08 oficial:
+  // Página 0: Frente Original
+  // Página 1: Dorso Original
+  // Página 2: Frente Duplicado
+  // Página 3: Dorso Duplicado
+  const pdfDoc = await PDFDocument.create();
+  pdfDoc.addPage([595.28, 841.89]);
+  pdfDoc.addPage([595.28, 841.89]);
+  pdfDoc.addPage([595.28, 841.89]);
+  pdfDoc.addPage([595.28, 841.89]);
 
-  // 2. Cargar el documento existente
-  const pdfDoc = await PDFDocument.load(existingPdfBytes);
   const pages = pdfDoc.getPages();
   
   // 3. Preparar fuentes

@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { TramiteSchema, type TramiteFormValues } from '@/lib/schemas';
 import { generate08 } from '@/lib/pdf/generator';
+import { downloadPdfBlob, getPdfFileName } from '@/lib/pdf/download';
 import { supabase } from '@/lib/supabase';
 
 // Steps components will be imported or defined here
@@ -301,11 +302,9 @@ export default function Wizard({ type, initialData, onSuccess, userId }: WizardP
       if (result.error) throw result.error;
 
       const pdfBytes = await generate08(formData, type);
-      const blob = new Blob([new Uint8Array(pdfBytes)], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-
-      window.open(url, '_blank');
-      toast.success('Formulario guardado en el historial y PDF generado.');
+      const fileName = getPdfFileName(type, formData);
+      downloadPdfBlob(pdfBytes, fileName);
+      toast.success(`Formulario guardado en el historial y PDF descargado: ${fileName}`);
       
       if (onSuccess) onSuccess();
     } catch (error: unknown) {
@@ -417,7 +416,7 @@ export default function Wizard({ type, initialData, onSuccess, userId }: WizardP
                       disabled={isGenerating}
                       className="w-full md:w-auto px-10 py-5 rounded-2xl font-black uppercase tracking-[0.15em] text-sm flex items-center justify-center gap-3 transition-all bg-brand-black text-white hover:bg-gray-800 shadow-xl shadow-gray-200"
                     >
-                      {isGenerating ? <Loader2 className="w-5 h-5 animate-spin" /> : <FileText className="w-5 h-5" />} Generar Formulario
+                      {isGenerating ? <Loader2 className="w-5 h-5 animate-spin" /> : <FileText className="w-5 h-5" />} Descargar Formulario
                     </button>
                   ) : (
                     <button

@@ -8,8 +8,19 @@ export async function GET() {
   try {
     const startTime = Date.now();
 
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Supabase credentials are not configured in environment variables',
+          timestamp: new Date().toISOString(),
+        },
+        { status: 503 }
+      );
+    }
+
     // Consulta ligera para mantener la base de datos de Supabase activa
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('tramites_08')
       .select('id')
       .limit(1);
