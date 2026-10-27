@@ -45,20 +45,22 @@ Desarrollada bajo una estética profesional y sobria, la herramienta busca elimi
 
 ## ⚡ Mantenimiento Activo de Supabase (Keep-Alive)
 
-Para evitar que el plan gratuito de Supabase se suspenda por inactividad tras 7 días de desuso, el proyecto cuenta con dos mecanismos automáticos cada 3 días:
+El mantenimiento se ejecuta con **Vercel Cron**, sin GitHub Actions y sin depender de una computadora encendida.
 
-1. **GitHub Actions (`.github/workflows/supabase-keep-alive.yml`)**:
-   - Se ejecuta automáticamente cada 3 días vía cron (`0 12 */3 * *`).
-   - Envía una petición REST a la base de datos de Supabase.
-   - Requiere tener configurados los siguientes Secrets en tu repositorio de GitHub (**Settings -> Secrets and variables -> Actions**):
-     - `NEXT_PUBLIC_SUPABASE_URL`
-     - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - También permite ejecutarse manualmente desde la pestaña **Actions** en GitHub.
+- `vercel.json` programa un `GET` a `https://<dominio-de-produccion>/api/keep-alive` con la expresión `0 12 */3 * *`.
+- El endpoint consulta la tabla `tramites_08` de Supabase por HTTPS, sin modificar datos ni devolver registros. La consulta tiene un límite de 15 segundos.
+- El horario es 12:00 UTC (09:00 de Argentina; en Hobby puede ejecutarse dentro de esa hora). Se ejecuta los días 1, 4, 7, … de cada mes: no representa un intervalo exacto de 72 horas y al cambiar de mes puede haber un intervalo menor.
 
-2. **Endpoint API y Vercel Cron (`/api/keep-alive` + `vercel.json`)**:
-   - Ruta API nativa en Next.js que ejecuta una consulta ligera a la base de datos.
-   - Si la aplicación está desplegada en Vercel, el cron se ejecutará automáticamente cada 3 días según lo estipulado en [vercel.json](file:///c:/Users/SFC/Desktop/Trabajo/escribania-lp/vercel.json).
+### Activación en Vercel
 
+1. Configurar `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` en las variables de entorno de **Production** del proyecto.
+2. Se recomienda configurar también `CRON_SECRET` con un valor aleatorio de al menos 16 caracteres. Vercel lo envía automáticamente como `Authorization: Bearer <CRON_SECRET>` y el endpoint rechaza peticiones sin ese token cuando está configurado.
+3. Desplegar estos cambios a **producción**. El cron se registra con ese despliegue; no se activa ejecutando la aplicación localmente ni en un preview.
+4. En **Settings → Cron Jobs**, verificar que `/api/keep-alive` esté habilitado y usar **Run** para probarlo. Revisar los logs: una consulta correcta responde `200` con `success: true`; los errores de configuración o de Supabase responden `503` o `500`.
+
+Esta consulta busca reducir la inactividad; no garantiza que Supabase nunca pause el proyecto. Si ya está pausado, debe reactivarse desde Supabase antes de probar el cron.
+
+Referencias: [Vercel Cron](https://vercel.com/docs/cron-jobs) y [gestión y protección del cron](https://vercel.com/docs/cron-jobs/manage-cron-jobs).
 
 <p align="center">
   <b>© 2026 RM Escribanía Argentina</b><br/>

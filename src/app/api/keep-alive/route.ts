@@ -4,7 +4,13 @@ import { supabase } from '@/lib/supabase';
 // Forzar renderizado dinámico para que no se almacene en caché
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request: Request) {
+  // Vercel envía este token automáticamente cuando CRON_SECRET está configurado.
+  const cronSecret = process.env.CRON_SECRET;
+  if (cronSecret && request.headers.get('authorization') !== `Bearer ${cronSecret}`) {
+    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const startTime = Date.now();
 
@@ -22,8 +28,9 @@ export async function GET() {
     // Consulta ligera para mantener la base de datos de Supabase activa
     const { error } = await supabase
       .from('tramites_08')
-      .select('id')
-      .limit(1);
+      .select('id', { head: true })
+      .limit(1)
+      .abortSignal(AbortSignal.timeout(15_000));
 
     if (error) {
       console.error('[keep-alive] Error al consultar Supabase:', error);
@@ -42,7 +49,7 @@ export async function GET() {
 
     return NextResponse.json({
       success: true,
-      message: 'Ping a Supabase completado con éxito - Proyecto activo',
+      message: 'Consulta a Supabase completada con éxito',
       durationMs,
       timestamp: new Date().toISOString(),
     });
