@@ -121,12 +121,12 @@ export default function Home() {
               </a>
 
               <a
-                href="https://wa.me/543435086453"
+                href="https://wa.me/543424497935"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full py-4 bg-gray-50 text-gray-700 rounded-2xl font-bold text-sm hover:bg-gray-100 transition-all flex items-center justify-center gap-3 active:scale-[0.98]"
               >
-                <MessageCircle className="w-5 h-5 text-green-500" strokeWidth={2} /> +54 343 508 6453
+                <MessageCircle className="w-5 h-5 text-green-500" strokeWidth={2} /> +54 342 449 7935
               </a>
             </div>
           </div>

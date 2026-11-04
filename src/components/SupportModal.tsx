@@ -93,7 +93,7 @@ export default function SupportModal({ isOpen, onClose }: SupportModalProps) {
                   </a>
 
                   <a
-                    href="https://wa.me/543435086453"
+                    href="https://wa.me/543424497935"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="group flex items-center gap-3 md:gap-4 p-4 md:p-5 rounded-xl border-2 border-gray-100 hover:border-green-500/50 hover:bg-green-50/50 transition-all active:scale-95"
@@ -103,7 +103,7 @@ export default function SupportModal({ isOpen, onClose }: SupportModalProps) {
                     </div>
                     <div className="min-w-0">
                       <div className="text-sm font-bold text-gray-900 mb-0.5 md:mb-1">WhatsApp</div>
-                      <div className="text-xs text-gray-500 font-medium">+54 343 508 6453</div>
+                      <div className="text-xs text-gray-500 font-medium">+54 342 449 7935</div>
                     </div>
                   </a>
                 </div>
